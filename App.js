@@ -1,11 +1,23 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+
+import { Button, StyleSheet, Text, View } from 'react-native';
 
 export default function App() {
+  const onPressLearnMore = () => {
+    console.log('Button Pressed');  
+  }
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
+      <View>
+        <Text style={styles.dummyText}>Welcome to React Native!</Text>
+
+      </View>
+      <Text style={styles.dummyText}>hello world</Text>
+      <Button
+        onPress={onPressLearnMore}
+        title="Learn More"
+        color="#841584"
+        accessibilityLabel="Learn more about this purple button"
+      />
     </View>
   );
 }
@@ -17,4 +29,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
+  dummyText: {
+    margin:16,
+    padding:16,
+    borderWidth: 2,
+    borderColor: 'blue',
+  }
 });
