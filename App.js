@@ -1,6 +1,5 @@
-
 import { useState } from 'react';
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Button, FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
 
 export default function App() {
   const [enteredGoalTxt, setEnteredGoalTxt] = useState('');
@@ -11,24 +10,33 @@ export default function App() {
   }
   
   function addGoalHandler() {
-    setCourceGoals((prevGoals) => [...prevGoals, enteredGoalTxt])
-    setEnteredGoalTxt('')
+    setCourceGoals((prevGoals) => [...prevGoals, {text:enteredGoalTxt, id:Math.random().toString()}])
+    // setEnteredGoalTxt('')
   }
 
   return (
     <View style={styles.appContainer}>
-     <View style={styles.inputContianer}>hello
+     <View style={styles.inputContianer}>
       <TextInput style={styles.textInput} placeholder="Your cource goal!" value={enteredGoalTxt} onChangeText={goalInputHandler} />
       <Button title="Add Goal" onPress={addGoalHandler} />
      </View>
      <View style={styles.goalContainer}>
-      {courceGoals.map((goal) => {
-        return <Text>{goal}</Text>
-      })}
-
-      {courceGoals.length < 0 &&
-        <Text>List of goals...</Text>}
+      <FlatList 
+      data = {courceGoals}
+      alwaysBounceVertical={false} 
+      renderItem={(itemData) => {
+        return (
+          <View style={styles.goalItem}>
+            <Text style={styles.goalText}>{itemData.item.text}</Text>
+          </View>
+        )
+      }}
+      keyExtractor={(item, index) => {
+        return item.id;
+      }}
+      />
      </View>
+
     </View>
   );
 }
@@ -60,6 +68,16 @@ const styles = StyleSheet.create({
   },
 
   goalContainer: {
-    flex:4
+    flex:4,
+  },
+  goalItem: {
+    margin:8,
+    padding:8,
+   
+    borderRadius:6,
+    backgroundColor:'#5e0acc',
+  },
+  goalText: {
+    color:'#fff',
   }
 });
