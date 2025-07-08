@@ -1,11 +1,10 @@
-import { View, Button, TextInput, StyleSheet } from "react-native";
+import { View, Button, TextInput, StyleSheet, Modal } from "react-native";
 import { useState } from "react";
 
 function GoalInput(props) {
   const [enteredGoalTxt, setEnteredGoalTxt] = useState("");
 
   function goalInputHandler(input) {
-    // This function expects an event object, not just the text.
     setEnteredGoalTxt(input);
   }
 
@@ -14,34 +13,52 @@ function GoalInput(props) {
     setEnteredGoalTxt("");
   }
 
+  function closeModalHandler() {
+    props.onCloseModal();
+  }
+
   return (
-    <View style={styles.inputContainer}>
-      <TextInput
-        style={styles.textInput}
-        placeholder="Your course goal!"
-        value={enteredGoalTxt}
-        onChangeText={goalInputHandler}
-      />
-      <Button title="Add Goal" onPress={addGoalHandler} />
-    </View>
+    <Modal visible={props.visible} animationType="slide">
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.textInput}
+          placeholder="Your course goal!"
+          value={enteredGoalTxt}
+          onChangeText={goalInputHandler}
+        />
+        <View style={styles.buttonRow}>
+          <View style={styles.button}><Button title="Add Goal" onPress={addGoalHandler} /></View>
+          <View style={styles.button}><Button title="Cancel" onPress={closeModalHandler} color="#5e0acc" /></View>
+        </View>
+      </View>
+    </Modal>
   );
 }
 
 const styles = StyleSheet.create({
   inputContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flex: 1,
+    justifyContent: "center",
     alignItems: "center",
-    paddingBottom: 24,
-    borderBottomWidth: 1,
-    borderBottomColor: "#cccccc",
+    padding: 16,
+    backgroundColor: '#fff',
   },
   textInput: {
     borderWidth: 1,
     borderColor: "#cccccc",
-    width: "70%",
-    marginRight: 8,
-    padding: 8,
+    width: "100%",
+    padding: 12,
+    borderRadius: 6,
+    marginBottom: 16,
+    backgroundColor: '#f9f9f9',
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    
+  },
+  button: {
+    width:'40%',
+    marginHorizontal: 6,
   },
 });
 
