@@ -35,7 +35,7 @@ const SliderItem = ({ item, index, scrollX }: Props) => {
               (index - 1) * screenWidth, index * screenWidth, (index + 1) * screenWidth
             ],
             [
-              -screenWidth * 0.1, 0, screenWidth * 0.1
+              -screenWidth * 0.15, 0, screenWidth * 0.15
             ],
             Extrapolation.CLAMP
           ),
@@ -47,7 +47,7 @@ const SliderItem = ({ item, index, scrollX }: Props) => {
               (index - 1) * screenWidth, index * screenWidth, (index + 1) * screenWidth
             ],
             [
-              0.8, 1, 0.8
+              0.85, 1, 0.85
             ],
             Extrapolation.CLAMP
           ),
