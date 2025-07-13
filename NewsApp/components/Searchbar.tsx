@@ -1,7 +1,7 @@
 import { Colors } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react'
-import { Text, TextInput, View } from 'react-native';
+import { TextInput, View, StyleSheet } from 'react-native';
 
 type Props = {}
 
@@ -16,7 +16,7 @@ const Searchbar = (props: Props) => {
   )
 }
 
-const styles = {
+const styles = StyleSheet.create({
   container: {
    marginHorizontal: 10,
    marginTop: 10,
@@ -38,6 +38,6 @@ const styles = {
     color: Colors.darkGrey,
 
   }
-};  
+});
 
 export default Searchbar;

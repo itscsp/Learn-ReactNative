@@ -12,12 +12,15 @@ type Props = {}
 const Page = (props: Props) => {
   const {top:safeTop} = useSafeAreaInsets();
   const [breakingNews, setBreakingNews] = useState<WPPostResponse[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const getBreakingNews = async() => {
     try {
-      const response = await axios.get(`${process.env.EXPO_PUBLIC_API_HOST}posts?per_page=5`);
+
+      const response = await axios.get(`${process.env.EXPO_PUBLIC_API_HOST}posts?_embed&per_page=5`);
       const data = response.data;
       if(data && data.length > 0) {
+        setIsLoading(false); 
         setBreakingNews(data);
       } else {
         console.log("No Breaking News found");
@@ -35,13 +38,10 @@ const Page = (props: Props) => {
     <View style={[styles.container, {paddingTop:safeTop}]} >
       <Header />
       <Searchbar />
-      { breakingNews.length > 0 ? (
         <View>
-          <BreakingNews newsList={breakingNews} />
+          <BreakingNews isLoading={isLoading} newsList={breakingNews} />
         </View>
-      ) : (
-        <Text>No Breaking News available</Text>
-      )}
+
     </View>
   )
 }
