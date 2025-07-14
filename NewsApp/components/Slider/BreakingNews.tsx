@@ -5,6 +5,7 @@ import { ActivityIndicator, Dimensions, StyleSheet, Text, View } from 'react-nat
 import { FlatList } from 'react-native'
 import SliderItem from './SliderItem'
 import Animated, { useAnimatedRef, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated'
+import Loading from '../UI/Loading'
 
 type Props = {
     newsList:Array<WPPostResponse>
@@ -26,7 +27,7 @@ const BreakingNews = ({isLoading, newsList}:Props) => {
     <View style={styles.container}>
       <Text style={styles.title}>Breaking News</Text>
       {isLoading ?
-      <ActivityIndicator size="large" />
+      <Loading size="large" />
       :
       <View style={styles.sliderWrapper}>
         <Animated.FlatList 
