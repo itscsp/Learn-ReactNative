@@ -1,6 +1,7 @@
 
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
+import axios from 'axios';
 import { Colors } from '@/constants/Colors'
 
 
@@ -23,13 +24,18 @@ const Categories = ({onCategoryChange}:Props) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('https://mangalorean.com/wp-json/wp/v2/categories')
-      .then(res => res.json())
-      .then(data => {
-        setCategories(data);
+    const fetchCategories = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(`${process.env.EXPO_PUBLIC_API_HOST}categories`);
+        setCategories(response.data);
+      } catch (e) {
+        setCategories([]);
+      } finally {
         setLoading(false);
-      })
-      .catch(() => setLoading(false));
+      }
+    };
+    fetchCategories();
   }, []);
 
   const handleSelectedCategory = (index: number, slug: string) => {
@@ -59,7 +65,7 @@ const Categories = ({onCategoryChange}:Props) => {
               ref={el => { itemRef.current[0] = el; }}
               key="all"
               style={[styles.categoryPill, activeIndex === 0 && styles.activePill]}
-              onPress={() => handleSelectedCategory(0)}
+              onPress={() => handleSelectedCategory(0, 'all')}
             >
               <Text style={[styles.categoryText, activeIndex === 0 && styles.activeText]}>All</Text>
             </TouchableOpacity>,
