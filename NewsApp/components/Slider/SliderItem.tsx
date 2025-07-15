@@ -1,9 +1,23 @@
 import { WPPostResponse } from "@/types";
 import React from "react";
-import { Text, Image, StyleSheet, Dimensions, View } from "react-native";
-import Animated, { Extrapolation, interpolate, SharedValue, useAnimatedStyle } from "react-native-reanimated";
+import {
+  Text,
+  Image,
+  StyleSheet,
+  Dimensions,
+  View,
+  Touchable,
+  TouchableOpacity,
+} from "react-native";
+import Animated, {
+  Extrapolation,
+  interpolate,
+  SharedValue,
+  useAnimatedStyle,
+} from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
 import { Colors } from "@/constants/Colors";
+import { Link } from "expo-router";
 
 type Props = {
   item: WPPostResponse;
@@ -32,11 +46,11 @@ const SliderItem = ({ item, index, scrollX }: Props) => {
           translateX: interpolate(
             scrollX.value,
             [
-              (index - 1) * screenWidth, index * screenWidth, (index + 1) * screenWidth
+              (index - 1) * screenWidth,
+              index * screenWidth,
+              (index + 1) * screenWidth,
             ],
-            [
-              -screenWidth * 0.15, 0, screenWidth * 0.15
-            ],
+            [-screenWidth * 0.15, 0, screenWidth * 0.15],
             Extrapolation.CLAMP
           ),
         },
@@ -44,11 +58,11 @@ const SliderItem = ({ item, index, scrollX }: Props) => {
           scale: interpolate(
             scrollX.value,
             [
-              (index - 1) * screenWidth, index * screenWidth, (index + 1) * screenWidth
+              (index - 1) * screenWidth,
+              index * screenWidth,
+              (index + 1) * screenWidth,
             ],
-            [
-              0.85, 1, 0.85
-            ],
+            [0.85, 1, 0.85],
             Extrapolation.CLAMP
           ),
         },
@@ -57,25 +71,31 @@ const SliderItem = ({ item, index, scrollX }: Props) => {
   });
 
   return (
-    <Animated.View style={[styles.itemWrapper, rnStyle]} key={item.id}>
-      <View style={styles.imageWrapper}>
-        <Image source={{ uri: imageUrl }} style={styles.image} />
-        <LinearGradient
-          colors={["transparent", "rgba(0, 0, 0, 0.8)"]}
-          style={styles.background}
-        >
-          <View style={styles.sourceInfo}>
-            <Text style={styles.sourceName}>
-              {item.date ? new Date(item.date).toLocaleDateString() : ""}
-              {(item as any)._embedded?.author?.[0]?.name
-                ? ` • ${(item as any)._embedded.author[0].name}`
-                : ""}
-            </Text>
+    <Link href={`/news/${item.id}`} asChild>
+      <TouchableOpacity>
+        <Animated.View style={[styles.itemWrapper, rnStyle]} key={item.id}>
+          <View style={styles.imageWrapper}>
+            <Image source={{ uri: imageUrl }} style={styles.image} />
+            <LinearGradient
+              colors={["transparent", "rgba(0, 0, 0, 0.8)"]}
+              style={styles.background}
+            >
+              <View style={styles.sourceInfo}>
+                <Text style={styles.sourceName}>
+                  {item.date ? new Date(item.date).toLocaleDateString() : ""}
+                  {(item as any)._embedded?.author?.[0]?.name
+                    ? ` • ${(item as any)._embedded.author[0].name}`
+                    : ""}
+                </Text>
+              </View>
+              <Text style={styles.title} numberOfLines={2}>
+                {item.title.rendered}
+              </Text>
+            </LinearGradient>
           </View>
-          <Text style={styles.title} numberOfLines={2}>{item.title.rendered}</Text>
-        </LinearGradient>
-      </View>
-    </Animated.View>
+        </Animated.View>
+      </TouchableOpacity>
+    </Link>
   );
 };
 
@@ -90,12 +110,12 @@ const styles = StyleSheet.create({
     width: ITEM_WIDTH,
     height: 160,
     borderRadius: 10,
-    overflow: 'hidden',
-    position: 'relative',
+    overflow: "hidden",
+    position: "relative",
   },
   image: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
     borderRadius: 10,
   },
   background: {
@@ -106,7 +126,7 @@ const styles = StyleSheet.create({
     height: 160,
     borderRadius: 10,
     padding: 10,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
   },
   sourceInfo: {
     marginBottom: 8,

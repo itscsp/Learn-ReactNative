@@ -1,8 +1,9 @@
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { Colors } from '@/constants/Colors';
 import { WPPostResponse } from '@/types';
 import Loading from '../UI/Loading';
+import { Link } from 'expo-router';
 
 type Props = {
   newsList?: Array<WPPostResponse>;
@@ -54,7 +55,9 @@ const NewsLists = ({ newsList:item, isLoading }: Props) => {
         }
 
         return (
-          <View key={item.id} style={styles.itemContainer}>
+          <Link key={item.id} href={`/news/${item.id}`} asChild>
+      <TouchableOpacity>
+          <View  style={styles.itemContainer}>
             <Image source={{ uri: imageUrl }} style={styles.itemImg} />
             <View style={{ flex: 1 }}>
               {category ? <Text style={styles.category}>{category}</Text> : null}
@@ -62,6 +65,8 @@ const NewsLists = ({ newsList:item, isLoading }: Props) => {
               {dateString ? <Text style={styles.date}>{dateString}</Text> : null}
             </View>
           </View>
+          </TouchableOpacity>
+          </Link>
         );
       })}
     </View>

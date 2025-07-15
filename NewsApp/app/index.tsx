@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     paddingBottom: 50,
     paddingHorizontal: 30,
     gap: 10,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(0,0,0,0.5",
   },
 
   title: {

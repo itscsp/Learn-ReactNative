@@ -1,5 +1,5 @@
 
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import axios from 'axios';
 import { Colors } from '@/constants/Colors'
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
   categoryPill: {
     borderWidth: 1,
     borderColor: Colors.darkGrey,
-    paddingVertical:10,
+    paddingVertical:Platform.OS === 'ios' ? 10 : 6,
     paddingHorizontal: 16,
     borderRadius: 10,
   },
