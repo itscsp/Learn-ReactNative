@@ -49,8 +49,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 1,
     borderColor: Colors.black,
-    paddingVertical: Platform.OS === "ios" ? 8 : 0,
-    paddingHorizontal: Platform.OS === "ios" ? 8 : 0,
+    paddingVertical: Platform.OS === "ios" ? 8 : 4,
+    paddingHorizontal: Platform.OS === "ios" ? 8 : 4,
 
     borderRadius: 10,
   },

@@ -18,7 +18,7 @@ const Page = (props: Props) => {
   const [newsList, setNewsList] = useState<WPPostResponse[]>([]);
   const [isTrendingLoading, setIsTrendingLoading] = useState(true);
   const [isNewsLoading, setIsNewsLoading] = useState(false);
-
+  const [searchParams, setSearchParams] = useState<string>();
 
   const getNewsByCategory = async (slug: string) => {
     setIsNewsLoading(true);
@@ -85,7 +85,7 @@ const Page = (props: Props) => {
   return (
     <ScrollView style={[styles.container, { paddingTop: safeTop }]}>
       <Header />
-      <Searchbar withHorizontalPadding={true}/>
+      <Searchbar withHorizontalPadding={true} setSearchParams={setSearchParams}/>
         <View>
         <BreakingNews isLoading={isTrendingLoading} newsList={breakingNews} />
       </View>
