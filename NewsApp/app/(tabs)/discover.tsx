@@ -59,10 +59,6 @@ const Page = (props: Props) => {
     setSearchParams(searchParams || '');
   }
 
-  useEffect(() => {
-    console.log('searchParams', searchParams);
-  }, [searchParams]);
-  
   const hasSearchText = searchParams && searchParams.trim().length > 2;
   const hasSelectedCategories = Object.values(checkedCategories).some(checked => checked);
   const isDisabled = !hasSearchText && !hasSelectedCategories;

@@ -1,4 +1,4 @@
-import { StyleSheet, ScrollView, View } from 'react-native'
+import { StyleSheet, View, FlatList, ActivityIndicator, Text } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Header from '@/components/UI/Header'
@@ -7,7 +7,9 @@ import axios from 'axios'
 import { WPPostResponse } from '@/types'
 import BreakingNews from '@/components/Slider/BreakingNews'
 import Categories from '@/components/Category/Categories'
-import NewsLists from '@/components/Category/NewsLists'
+import NewsListItem from '@/components/Category/NewsListItem'
+import Loading from '@/components/UI/Loading'
+
 
 
 type Props = {}
@@ -19,11 +21,14 @@ const Page = (props: Props) => {
   const [isTrendingLoading, setIsTrendingLoading] = useState(true);
   const [isNewsLoading, setIsNewsLoading] = useState(false);
   const [searchParams, setSearchParams] = useState<string>();
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-  const getNewsByCategory = async (slug: string) => {
+  const getNewsByCategory = async (slug: string, pageNum = 1, append = false) => {
     setIsNewsLoading(true);
     try {
-      let url = `${process.env.EXPO_PUBLIC_API_HOST}posts?_embed&per_page=20`;
+      let url = `${process.env.EXPO_PUBLIC_API_HOST}posts?_embed&per_page=20&page=${pageNum}`;
       if (slug && slug !== 'all') {
         // Fetch category by slug to get its ID
         const catRes = await axios.get(`${process.env.EXPO_PUBLIC_API_HOST}categories?slug=${slug}`);
@@ -33,26 +38,32 @@ const Page = (props: Props) => {
         } else {
           setNewsList([]);
           setIsNewsLoading(false);
+          setHasMore(false);
           return;
         }
       }
       const response = await axios.get(url);
       const data = response.data;
-      if (data && data.length > 0) {
-        setNewsList(data);
+      if (append) {
+        setNewsList(prev => [...prev, ...data]);
       } else {
-        setNewsList([]);
+        setNewsList(data);
       }
+      setHasMore(data.length === 20);
     } catch (error) {
       setNewsList([]);
+      setHasMore(false);
       console.error(error);
     } finally {
       setIsNewsLoading(false);
+      setIsInitialLoad(false);
     }
   };
 
   const onCatChange = (slugString: string) => {
-    getNewsByCategory(slugString);
+    setPage(1);
+    setHasMore(true);
+    getNewsByCategory(slugString, 1, false);
   }
 
   useEffect(() => {
@@ -60,38 +71,77 @@ const Page = (props: Props) => {
     const fetchInitialNews = async () => {
       setIsTrendingLoading(true);
       setIsNewsLoading(true);
+      setIsInitialLoad(true);
       try {
-        const response = await axios.get(`${process.env.EXPO_PUBLIC_API_HOST}posts?_embed&per_page=20`);
+        const response = await axios.get(`${process.env.EXPO_PUBLIC_API_HOST}posts?_embed&per_page=20&page=1`);
         const data = response.data;
         if (data && data.length > 0) {
           setBreakingNews(data.slice(0, 5));
           setNewsList(data);
+          setHasMore(data.length === 20);
         } else {
           setBreakingNews([]);
           setNewsList([]);
+          setHasMore(false);
         }
       } catch (error) {
         setBreakingNews([]);
         setNewsList([]);
+        setHasMore(false);
         console.error(error);
       } finally {
         setIsTrendingLoading(false);
         setIsNewsLoading(false);
+        setIsInitialLoad(false);
       }
     };
     fetchInitialNews();
   }, []);
 
+  const handleLoadMore = () => {
+    if (hasMore && !isNewsLoading) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+      getNewsByCategory('all', nextPage, true);
+    }
+  };
+
+  // Loader logic
+  const isLoadingMore = isNewsLoading && page > 1;
+
   return (
-    <ScrollView style={[styles.container, { paddingTop: safeTop }]}>
-      <Header />
-      <Searchbar withHorizontalPadding={true} setSearchParams={setSearchParams}/>
-        <View>
-        <BreakingNews isLoading={isTrendingLoading} newsList={breakingNews} />
-      </View>
-      <Categories onCategoryChange={onCatChange} />
-      <NewsLists newsList={newsList} isLoading={isNewsLoading} />
-    </ScrollView>
+    <View style={[styles.container, { paddingTop: safeTop }]}>  
+      {isInitialLoad ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" />
+        </View>
+      ) : (
+        <FlatList
+          data={newsList}
+          renderItem={({ item }) => <NewsListItem post={item} loading={isNewsLoading} />}
+          keyExtractor={item => item.id.toString()}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.5}
+          ListHeaderComponent={
+            <>
+              <Header />
+              <Searchbar withHorizontalPadding={true} setSearchParams={setSearchParams}/>
+              <View>
+                <BreakingNews isLoading={isTrendingLoading} newsList={breakingNews} />
+              </View>
+              <Categories onCategoryChange={onCatChange} />
+            </>
+          }
+          ListFooterComponent={
+            isLoadingMore ? (
+              <View style={{ padding: 16 }}>
+                <ActivityIndicator size="small" />
+              </View>
+            ) : null
+          }
+        />
+      )}
+    </View>
   )
 }
 

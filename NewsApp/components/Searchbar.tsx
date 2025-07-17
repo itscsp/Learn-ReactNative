@@ -5,11 +5,12 @@ import { Platform } from 'react-native';
 import { TextInput, View, StyleSheet } from 'react-native';
 
 type Props = {
-  withHorizontalPadding:boolean
-  setSearchParams: (params: string) => void
-}
+  withHorizontalPadding: boolean;
+  setSearchParams: (params: string) => void;
+  onFocus?: () => void; // already optional
+};
 
-const Searchbar = ({withHorizontalPadding, setSearchParams}: Props) => {
+const Searchbar = ({ withHorizontalPadding, setSearchParams, onFocus }: Props) => {
   const [search, setSearch] = useState('');
 
   const handleSearch = () => {
@@ -26,17 +27,13 @@ const Searchbar = ({withHorizontalPadding, setSearchParams}: Props) => {
     setSearchParams(text);
   }
 
-  useEffect(() => {
-    console.log('search', search);
-  }, [search]);
-
   return (
     <View style={[styles.container, withHorizontalPadding && {paddingHorizontal: 10}]}>
       <View style={styles.searchBar}>
        
         <TextInput 
           style={styles.searchText} 
-          placeholder="Search news..." 
+          placeholder="Search news..."
           value={search} 
           onChangeText={handleTextChange} 
           onSubmitEditing={handleSearch}
@@ -45,6 +42,7 @@ const Searchbar = ({withHorizontalPadding, setSearchParams}: Props) => {
           autoComplete='off'
           autoCorrect={false}
           autoFocus={true}
+          onFocus={onFocus}
         />
          <Ionicons name="search-outline" size={24} color={Colors.lightGrey} />
       </View>
