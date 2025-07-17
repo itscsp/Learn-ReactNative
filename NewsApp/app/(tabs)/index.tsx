@@ -24,6 +24,7 @@ const Page = (props: Props) => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [categorySlug, setCategorySlug] = useState('all');
 
   const getNewsByCategory = async (slug: string, pageNum = 1, append = false) => {
     setIsNewsLoading(true);
@@ -61,8 +62,10 @@ const Page = (props: Props) => {
   };
 
   const onCatChange = (slugString: string) => {
+    setCategorySlug(slugString);
     setPage(1);
     setHasMore(true);
+    setNewsList([]); // Clear previous news
     getNewsByCategory(slugString, 1, false);
   }
 
@@ -102,7 +105,7 @@ const Page = (props: Props) => {
     if (hasMore && !isNewsLoading) {
       const nextPage = page + 1;
       setPage(nextPage);
-      getNewsByCategory('all', nextPage, true);
+      getNewsByCategory(categorySlug, nextPage, true);
     }
   };
 
@@ -119,7 +122,7 @@ const Page = (props: Props) => {
         <FlatList
           data={newsList}
           renderItem={({ item }) => <NewsListItem post={item} loading={isNewsLoading} />}
-          keyExtractor={item => item.id.toString()}
+          keyExtractor={item => `${item.id}-${categorySlug}`}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.5}
           ListHeaderComponent={
