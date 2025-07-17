@@ -5,12 +5,14 @@ import { AntDesign } from "@expo/vector-icons";
 import { useAnimatedStyle, withTiming } from "react-native-reanimated";
 
 type Props = {
-  label: string;
+  id: number;
+  name: string;
+  slug: string;
   checked: boolean;
   onPress: () => void;
 };
 
-const CheckBox = ({ label, checked, onPress }: Props) => {
+const CheckBox = ({ id, name, slug, checked, onPress }: Props) => {
   const rnAnimatedConstantStyle = useAnimatedStyle(() => {
     const style = {
       backgroundColor: withTiming(
@@ -23,13 +25,12 @@ const CheckBox = ({ label, checked, onPress }: Props) => {
       paddingLeft: withTiming(16, { duration: 150 }),
       paddingRight: withTiming(checked ? 10 : 16, { duration: 150 }),
     };
-    console.log('Animated style:', style);
     return style;
   });
   return (
     <TouchableOpacity activeOpacity={0.7} onPress={onPress}>
       <Animated.View style={[styles.container, rnAnimatedConstantStyle]}>
-        <Text style={styles.label}>{label}</Text>
+        <Text style={styles.label}>{name}</Text>
         {checked &&
         <View style={styles.iconWrapper}>
            <AntDesign name="checkcircle" size={14} color={Colors.tint} />

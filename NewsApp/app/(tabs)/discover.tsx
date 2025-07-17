@@ -6,15 +6,21 @@ import { Colors } from '@/constants/Colors'
 import axios from 'axios'
 import CheckBox from '@/components/Category/CheckBox'
 import { Link } from 'expo-router'
+import Loading from '@/components/UI/Loading'
+import { Category } from '@/components/Category/SearchCategories';
+import { useLocalSearchParams } from 'expo-router';
 
 type Props = {}
 
 const Page = (props: Props) => {
   const {top: safeTop} = useSafeAreaInsets();
-  const [categories, setCategories] = useState<{id: number; name: string}[]>([]);
+  const [categories, setCategories] = useState<{id: number; name: string; slug: string}[]>([]);
   const [loading, setLoading] = useState(true);
   const [checkedCategories, setCheckedCategories] = useState<{[id: number]: boolean}>({});
   const [searchParams, setSearchParams] = useState<string>('');
+
+  const { query, selectedCategories } = useLocalSearchParams<{ query: string, selectedCategories: string }>();
+  const [selectedCats, setSelectedCats] = useState<Category[]>([]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -35,13 +41,31 @@ const Page = (props: Props) => {
     fetchCategories();
   }, []);
 
+  useEffect(() => {
+    if (selectedCategories) {
+      try {
+        setSelectedCats(JSON.parse(selectedCategories));
+      } catch {
+        setSelectedCats([]);
+      }
+    }
+  }, [selectedCategories]);
+
   const handleCheck = (id: number) => {
     setCheckedCategories(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
   const handleSearch = (searchParams: string) => {
-    setSearchParams(searchParams);
+    setSearchParams(searchParams || '');
   }
+
+  useEffect(() => {
+    console.log('searchParams', searchParams);
+  }, [searchParams]);
+  
+  const hasSearchText = searchParams && searchParams.trim().length > 2;
+  const hasSelectedCategories = Object.values(checkedCategories).some(checked => checked);
+  const isDisabled = !hasSearchText && !hasSelectedCategories;
 
   return (
     <View style={[styles.container, {paddingTop: safeTop + 20}]}>
@@ -49,13 +73,15 @@ const Page = (props: Props) => {
       <Text style={styles.title}>Categories</Text>
       <ScrollView>
       {loading ? (
-        <Text>Loading...</Text>
+       <Loading size="large" />
       ) : (
         <View  style={styles.listContainer}>
             {categories.map((cat) => (
               <CheckBox
                 key={cat.id}
-                label={cat.name}
+                id={cat.id}
+                name={cat.name}
+                slug={cat.slug}
                 checked={!!checkedCategories[cat.id]}
                 onPress={() => handleCheck(cat.id)}
               />
@@ -63,22 +89,34 @@ const Page = (props: Props) => {
         </View>
       )}
       </ScrollView>
-      <Link
-        href={{
-          pathname: '/news/search',
-          params: {
-            query: searchParams,
-            categories: Object.keys(checkedCategories)
-              .filter((id) => checkedCategories[Number(id)])
-              .join(','),
-          },
-        }}
-        asChild
-      >
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Search</Text>
+      {isDisabled ? (
+        <TouchableOpacity style={[styles.button, styles.buttonDisabled]} disabled>
+          <Text style={[styles.buttonText, styles.buttonTextDisabled]}>Search</Text>
         </TouchableOpacity>
-      </Link>
+      ) : (
+        <Link
+          href={{
+            pathname: '/news/search',
+            params: {
+              query: searchParams,
+              selectedCategories: JSON.stringify(
+                categories
+                  .filter((cat) => checkedCategories[cat.id])
+                  .map((cat) => ({
+                    id: cat.id,
+                    name: cat.name,
+                    slug: cat.slug
+                  }))
+              ),
+            },
+          }}
+          asChild
+        >
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText}>Search</Text>
+          </TouchableOpacity>
+        </Link>
+      )}
     </View>
   )
 }
@@ -120,4 +158,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
+  buttonDisabled: {
+    backgroundColor: Colors.lightGrey,
+  },
+  buttonTextDisabled: {
+    color: Colors.darkGrey,
+  }
 })

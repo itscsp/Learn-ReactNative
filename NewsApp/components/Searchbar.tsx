@@ -1,6 +1,6 @@
 import { Colors } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Platform } from 'react-native';
 import { TextInput, View, StyleSheet } from 'react-native';
 
@@ -13,14 +13,40 @@ const Searchbar = ({withHorizontalPadding, setSearchParams}: Props) => {
   const [search, setSearch] = useState('');
 
   const handleSearch = () => {
-    setSearchParams(search);
+    if(search.length > 2) {
+      setSearchParams(search);
+    }
+    else {
+      setSearchParams('');
+    }
   }
+
+  const handleTextChange = (text: string) => {
+    setSearch(text);
+    setSearchParams(text);
+  }
+
+  useEffect(() => {
+    console.log('search', search);
+  }, [search]);
 
   return (
     <View style={[styles.container, withHorizontalPadding && {paddingHorizontal: 10}]}>
       <View style={styles.searchBar}>
-        <Ionicons name="search-outline" size={24} color={Colors.lightGrey} />
-        <TextInput style={styles.searchText} placeholder="Search" value={search} onChangeText={handleSearch} placeholderTextColor={Colors.lightGrey} autoCapitalize='none' />
+       
+        <TextInput 
+          style={styles.searchText} 
+          placeholder="Search news..." 
+          value={search} 
+          onChangeText={handleTextChange} 
+          onSubmitEditing={handleSearch}
+          placeholderTextColor={Colors.lightGrey} 
+          autoCapitalize='none' 
+          autoComplete='off'
+          autoCorrect={false}
+          autoFocus={true}
+        />
+         <Ionicons name="search-outline" size={24} color={Colors.lightGrey} />
       </View>
     </View>
   )
