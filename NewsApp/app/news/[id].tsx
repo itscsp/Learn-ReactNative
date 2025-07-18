@@ -8,7 +8,7 @@ import Loading from "@/components/UI/Loading";
 import { Colors } from "@/constants/Colors";
 import RenderHtml from 'react-native-render-html';
 import { useWindowDimensions } from 'react-native';
-
+import AsyncStorage from "@react-native-async-storage/async-storage"
 type Props = {};
 
 const NewsDetails = (props: Props) => {
@@ -16,10 +16,13 @@ const NewsDetails = (props: Props) => {
   const [newsData, setNewsData] = useState<WPPostResponse>();
   const [isLoading, setIsLoading] = useState(false);
   const { width } = useWindowDimensions();
+  const [bookmark, setBookmark] = useState(false);
+
 
   useEffect(() => {
     if (id) {
       getSingleNews(id);
+      checkIfBookmarked(id);
     }
   }, [id]);
 
@@ -34,6 +37,49 @@ const NewsDetails = (props: Props) => {
       console.error(error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const saveBookmark = async (newsId: string) => {
+    
+    try {
+      const token = await AsyncStorage.getItem('bookmark');
+      let bookmarks: string[] = [];
+      if (token) {
+        bookmarks = JSON.parse(token);
+      }
+      if (!bookmarks.includes(newsId)) {
+        bookmarks.push(newsId);
+        await AsyncStorage.setItem('bookmark', JSON.stringify(bookmarks));
+        alert('News Saved!');
+        setBookmark(true);
+      } else {
+        const bookmark = await AsyncStorage.getItem("bookmark").then((token) => {
+          const res = JSON.parse(token);
+          return res.filter((id: string) => id !== newsId)
+        })
+
+        await AsyncStorage.setItem("bookmark", JSON.stringify(bookmark))
+        alert("News unsaved!")
+        setBookmark(false);
+      }
+    } catch (error) {
+      console.error('Error saving bookmark:', error);
+      alert('Failed to save bookmark.');
+    }
+  };
+
+  const checkIfBookmarked = async (newsId: string) => {
+    try {
+      const token = await AsyncStorage.getItem('bookmark');
+      if (token) {
+        const bookmarks: string[] = JSON.parse(token);
+        setBookmark(bookmarks.includes(newsId));
+      } else {
+        setBookmark(false);
+      }
+    } catch (error) {
+      setBookmark(false);
     }
   };
 
@@ -76,8 +122,8 @@ const NewsDetails = (props: Props) => {
                 </TouchableOpacity>
         ),
         headerRight: () => (
-            <TouchableOpacity onPress={() => {}}>
-                <Ionicons name="bookmark-outline" size={22} />
+            <TouchableOpacity onPress={() => saveBookmark(id)}>
+                <Ionicons name={`${bookmark ? "bookmark" : "bookmark-outline"}`} size={22} />
                 {/* <Ionicons name="bookmark" size={22} /> */}
             </TouchableOpacity>
         ),
@@ -122,7 +168,7 @@ const styles = StyleSheet.create({
     },
     contentContainer: {
         flex: 1, // Only the ScrollView should have flex:1
-        marginHorizontal:20,
+        paddingHorizontal:20,
 
     },
     image: {

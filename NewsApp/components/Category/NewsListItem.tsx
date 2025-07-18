@@ -37,7 +37,7 @@ const NewsListItem: React.FC<NewsListItemProps> = ({ post, loading }) => {
   return (
     <Link href={`/news/${post.id}`} asChild>
       <TouchableOpacity>
-        <View style={[styles.itemContainer, { opacity: loading ? 0.2 : 1 }]}>
+        <View style={[styles.itemContainer, { opacity: loading ? 0.8 : 1 }]}>
           <Image source={{ uri: imageUrl }} style={styles.itemImg} />
           <View style={{ flex: 1 }}>
             {category ? <Text style={styles.category}>{category}</Text> : null}
