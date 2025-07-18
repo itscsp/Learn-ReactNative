@@ -34,6 +34,7 @@ const style = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    paddingTop:10
   },
   userImg: {
     width: 40,
