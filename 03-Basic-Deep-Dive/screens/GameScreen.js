@@ -1,12 +1,13 @@
-import { StyleSheet, View, Alert } from "react-native";
+import { StyleSheet, View, Alert, Text, FlatList } from "react-native";
 import { useState, useEffect } from "react";
 import Title from "../components/ui/Title";
 import NumberContainer from "../components/game/NumberContainer";
 import PrimaryButtons from "../components/ui/PrimaryButtons";
 import InstructionText from "../components/ui/InstructionText";
 import Card from "../components/ui/Card";
-import {Ionicons} from '@expo/vector-icons'
+import { Ionicons } from "@expo/vector-icons";
 import color from "../constant/colors";
+import GuessLogItem from "../components/game/GuessLogItem";
 
 function generateRandomBetween(min, max, exclude) {
   const rndNum = Math.floor(Math.random() * (max - min)) + min;
@@ -16,7 +17,6 @@ function generateRandomBetween(min, max, exclude) {
   } else {
     return rndNum;
   }
-  ``;
 }
 
 let minBoundary = 1;
@@ -25,17 +25,18 @@ let maxBoundary = 100;
 function GameScreen({ userNumber, onGameOver }) {
   const initialGuess = generateRandomBetween(1, 100, userNumber);
   const [currentGuess, setCurrentGuess] = useState(initialGuess);
+  const [guessRounds, setGuessRound] = useState([initialGuess]);
 
   useEffect(() => {
     if (currentGuess === userNumber) {
-      onGameOver();
+      onGameOver(guessRoundListLength);
     }
   }, [currentGuess, userNumber, onGameOver]);
 
   useEffect(() => {
     minBoundary = 1;
     maxBoundary = 100;
-  }, [])
+  }, []);
 
   const nextGessHandler = (direction) => {
     if (
@@ -62,7 +63,10 @@ function GameScreen({ userNumber, onGameOver }) {
       currentGuess
     );
     setCurrentGuess(newRndNumber);
+    setGuessRound((prevGuesses) => [newRndNumber, ...prevGuesses]);
   };
+
+  const guessRoundListLength = guessRounds.length
 
   return (
     <View style={styles.screen}>
@@ -78,11 +82,18 @@ function GameScreen({ userNumber, onGameOver }) {
           </View>
           <View style={styles.buttonContainer}>
             <PrimaryButtons onPress={nextGessHandler.bind(this, "lower")}>
-            <Ionicons name="remove" size={24} color={color.white} />
+              <Ionicons name="remove" size={24} color={color.white} />
             </PrimaryButtons>
           </View>
         </View>
       </Card>
+      <View style={styles.listContainer}>
+        <FlatList
+          data={guessRounds}
+          renderItem={(itemData) => <GuessLogItem roundNumber={Number(guessRoundListLength - itemData.index)} guess={itemData.item} />}
+          keyExtractor={(item) => item}
+        />
+      </View>
     </View>
   );
 }
@@ -91,16 +102,21 @@ export default GameScreen;
 
 const styles = StyleSheet.create({
   screen: {
+    flex:1,
     padding: 24,
-   
   },
 
   buttonsContainer: {
-    flexDirection: 'row',
-    marginTop:20,
+    flexDirection: "row",
+    marginTop: 20,
   },
 
   buttonContainer: {
+    flex: 1,
+  },
+  listContainer: {
     flex:1,
+    paddingTop:15,
+    paddingBottom:0,
   }
 });

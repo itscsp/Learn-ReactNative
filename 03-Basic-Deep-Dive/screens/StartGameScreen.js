@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
 
 
   numberInput: {
-    height: 50,
+    height: 70,
     width: 50,
     fontSize: 32,
     borderBottomColor: "#ddb52f",
