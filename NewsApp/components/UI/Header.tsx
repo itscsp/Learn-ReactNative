@@ -2,13 +2,17 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
+import { router } from "expo-router";
 
 type Props = {};
 
 const Header = (props: Props) => {
   return (
     <View style={style.container}>
-      <View style={style.userInfo}>
+      <TouchableOpacity 
+        style={style.userInfo} 
+        onPress={() => router.push("/user/profile")}
+      >
         <Image
           source={{ uri: "https://randomuser.me/api/portraits/men/1.jpg" }}
           style={style.userImg}
@@ -17,9 +21,9 @@ const Header = (props: Props) => {
           <Text style={style.welcomeText}>Welcome</Text>
           <Text style={style.userName}>Sri Krishna!</Text>
         </View>
-      </View>
+      </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => console.log("Notifications Pressed")}>
+      <TouchableOpacity onPress={() => router.push("/user/notification")}>
         <Ionicons name="notifications-outline" size={24} color={Colors.black} />
       </TouchableOpacity>
     </View>

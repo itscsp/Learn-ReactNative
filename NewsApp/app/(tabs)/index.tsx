@@ -1,21 +1,27 @@
-import { StyleSheet, View, FlatList, ActivityIndicator, Text } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import Header from '@/components/UI/Header'
-import Searchbar from '@/components/Searchbar'
-import axios from 'axios'
-import { WPPostResponse } from '@/types'
-import BreakingNews from '@/components/Slider/BreakingNews'
-import Categories from '@/components/Category/Categories'
-import NewsListItem from '@/components/Category/NewsListItem'
-import Loading from '@/components/UI/Loading'
+import {
+  StyleSheet,
+  View,
+  FlatList,
+  ActivityIndicator,
+  Text,
+  TouchableOpacity,
+} from "react-native";
+import React, { useEffect, useState } from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Header from "@/components/UI/Header";
+import Searchbar from "@/components/Searchbar";
+import axios from "axios";
+import { WPPostResponse } from "@/types";
+import BreakingNews from "@/components/Slider/BreakingNews";
+import Categories from "@/components/Category/Categories";
+import NewsListItem from "@/components/Category/NewsListItem";
+import Loading from "@/components/UI/Loading";
+import { router } from "expo-router";
 
-
-
-type Props = {}
+type Props = {};
 
 const Page = (props: Props) => {
-  const {top:safeTop} = useSafeAreaInsets();
+  const { top: safeTop } = useSafeAreaInsets();
   const [breakingNews, setBreakingNews] = useState<WPPostResponse[]>([]);
   const [newsList, setNewsList] = useState<WPPostResponse[]>([]);
   const [isTrendingLoading, setIsTrendingLoading] = useState(true);
@@ -24,15 +30,21 @@ const Page = (props: Props) => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [categorySlug, setCategorySlug] = useState('all');
+  const [categorySlug, setCategorySlug] = useState("all");
 
-  const getNewsByCategory = async (slug: string, pageNum = 1, append = false) => {
+  const getNewsByCategory = async (
+    slug: string,
+    pageNum = 1,
+    append = false
+  ) => {
     setIsNewsLoading(true);
     try {
       let url = `${process.env.EXPO_PUBLIC_API_HOST}posts?_embed&per_page=20&page=${pageNum}`;
-      if (slug && slug !== 'all') {
+      if (slug && slug !== "all") {
         // Fetch category by slug to get its ID
-        const catRes = await axios.get(`${process.env.EXPO_PUBLIC_API_HOST}categories?slug=${slug}`);
+        const catRes = await axios.get(
+          `${process.env.EXPO_PUBLIC_API_HOST}categories?slug=${slug}`
+        );
         const catData = catRes.data;
         if (Array.isArray(catData) && catData.length > 0 && catData[0].id) {
           url += `&categories=${catData[0].id}`;
@@ -46,7 +58,7 @@ const Page = (props: Props) => {
       const response = await axios.get(url);
       const data = response.data;
       if (append) {
-        setNewsList(prev => [...prev, ...data]);
+        setNewsList((prev) => [...prev, ...data]);
       } else {
         setNewsList(data);
       }
@@ -67,7 +79,7 @@ const Page = (props: Props) => {
     setHasMore(true);
     setNewsList([]); // Clear previous news
     getNewsByCategory(slugString, 1, false);
-  }
+  };
 
   useEffect(() => {
     // On initial load, fetch all news and set both breakingNews and newsList
@@ -76,7 +88,9 @@ const Page = (props: Props) => {
       setIsNewsLoading(true);
       setIsInitialLoad(true);
       try {
-        const response = await axios.get(`${process.env.EXPO_PUBLIC_API_HOST}posts?_embed&per_page=20&page=1`);
+        const response = await axios.get(
+          `${process.env.EXPO_PUBLIC_API_HOST}posts?_embed&per_page=20&page=1`
+        );
         const data = response.data;
         if (data && data.length > 0) {
           setBreakingNews(data.slice(0, 5));
@@ -113,24 +127,37 @@ const Page = (props: Props) => {
   const isLoadingMore = isNewsLoading && page > 1;
 
   return (
-    <View style={[styles.container, { paddingTop: safeTop }]}>  
+    <View style={[styles.container, { paddingTop: safeTop }]}>
       {isInitialLoad ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
           <ActivityIndicator size="large" />
         </View>
       ) : (
         <FlatList
           data={newsList}
-          renderItem={({ item }) => <NewsListItem post={item} loading={isNewsLoading} />}
-          keyExtractor={item => `${item.id}-${categorySlug}`}
+          renderItem={({ item }) => (
+            <NewsListItem post={item} loading={isNewsLoading} />
+          )}
+          keyExtractor={(item) => `${item.id}-${categorySlug}`}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.5}
           ListHeaderComponent={
             <>
               <Header />
-              <Searchbar withHorizontalPadding={true} setSearchParams={setSearchParams}/>
+              <TouchableOpacity onPress={() => router.push("/discover")}>
+                <Searchbar
+                  from={"home"}
+                  withHorizontalPadding={true}
+                  setSearchParams={setSearchParams}
+                />
+              </TouchableOpacity>
               <View>
-                <BreakingNews isLoading={isTrendingLoading} newsList={breakingNews} />
+                <BreakingNews
+                  isLoading={isTrendingLoading}
+                  newsList={breakingNews}
+                />
               </View>
               <Categories onCategoryChange={onCatChange} />
             </>
@@ -145,13 +172,13 @@ const Page = (props: Props) => {
         />
       )}
     </View>
-  )
-}
+  );
+};
 
-export default Page
+export default Page;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  }
+  },
 });
