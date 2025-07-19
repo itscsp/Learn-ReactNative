@@ -18,6 +18,7 @@ import NewsListItem from "@/components/Category/NewsListItem";
 import Loading from "@/components/UI/Loading";
 import { router } from "expo-router";
 
+
 type Props = {};
 
 const Page = (props: Props) => {
@@ -146,7 +147,7 @@ const Page = (props: Props) => {
           ListHeaderComponent={
             <>
               <Header />
-              <TouchableOpacity onPress={() => router.push("/discover")}>
+              <TouchableOpacity onPress={() => router.push("/(tabs)/discover")}>
                 <Searchbar
                   from={"home"}
                   withHorizontalPadding={true}
