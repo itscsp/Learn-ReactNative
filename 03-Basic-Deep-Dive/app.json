@@ -1,7 +1,12 @@
 {
   "expo": {
-    "name": "RNCource",
-    "slug": "RNCource",
+    "name": "GuessGame",
+    "slug": "guessgame",
+    "extra": {
+      "eas": {
+        "projectId": "77bccbc7-aef2-495c-9e0b-c5cca3f2fa3b"
+      }
+    },
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -13,20 +18,25 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.chethanspoojary.guessgame"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "package": "com.chethanspoojary.guessgame",
+      "versionCode": 1,
+      "permissions": [],
+      "buildType": "apk"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "owner": "chethanspoojary"
   }
 }
