@@ -1,7 +1,7 @@
 
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, Platform } from "react-native";
 import color from "../../constant/colors";
-import React from 'react'
+
 
 export default function Title({ children }) {
   return (
@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
       fontFamily: 'open-sans-bold',
         fontSize: 26,
         fontWeight: 'bold',
-        color: color.primary700,
+        color: Platform.OS === 'ios' ? 'black' : color.primary700,
         textAlign: 'center',
     },
 });

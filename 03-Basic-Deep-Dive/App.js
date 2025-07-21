@@ -7,6 +7,7 @@ import GameOverScreen from "./screens/GameOverScreen";
 import color from "./constant/colors";
 import { useFonts } from "expo-font";
 import * as SplashScreen from 'expo-splash-screen';
+import { StatusBar } from "expo-status-bar";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -58,6 +59,9 @@ export default function App() {
 
 
   return (
+    <>
+    <StatusBar style="light" />
+    
     <LinearGradient
       colors={[color.accent500, color.primary500]}
       style={styles.rootScreen}
@@ -73,6 +77,7 @@ export default function App() {
           </SafeAreaView>
       </ImageBackground>
     </LinearGradient>
+    </>
   );
 }
 
