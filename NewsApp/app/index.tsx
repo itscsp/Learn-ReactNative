@@ -18,7 +18,7 @@ const Page = () => {
         <Animated.Text style={styles.title} entering={FadeInDown.delay(300)} >Stay Updated!</Animated.Text>
         <Animated.Text style={styles.description} entering={FadeInDown.delay(800)}>Get breaking news and personalized updates direcly to your feed.</Animated.Text>
         <Animated.View entering={FadeInDown.delay(1300).duration(500)} style={{ width: "100%" }}>
-        <TouchableOpacity style={styles.btn} onPress={() => router.replace("/user/profile")}>
+        <TouchableOpacity style={styles.btn} onPress={() => router.replace("/(tabs)")}>
           <Text style={styles.btnText}>Get Started</Text>
         </TouchableOpacity>
         </Animated.View>
