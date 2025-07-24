@@ -21,14 +21,12 @@ export default function MealsOverview({route, navigation}) {
 
   }, [catId, navigation])
 
-  function pressHandler() {
-    navigation.navigate('MealDetails')
-  }
 
   function renderMealItem(itemData) {
     const item = itemData.item;
 
     const mealItemProps = {
+      id: item.id,
         title: item.title,
         imageUrl: item.imageUrl,
         duration: item.duration,
@@ -37,7 +35,7 @@ export default function MealsOverview({route, navigation}) {
 
 
     }
-    return <MealItem {...mealItemProps} onPress={pressHandler} />
+    return <MealItem {...mealItemProps} />
   }
 
   return (
