@@ -5,8 +5,43 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import MealsOverview from "./screen/MealsOverview";
 import MealDetailsScreen from "./screen/MealDetailsScreen";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+import FavoritesScreen from "./screen/FavoritesScreen";
+import {Ionicons} from "@expo/vector-icons"
 
 const Stack = createNativeStackNavigator();
+const Drawer = createDrawerNavigator();
+
+function DrawerNavigator() {
+  return <Drawer.Navigator
+    screenOptions={{
+      headerStyle: {
+              backgroundColor: "#340303ff",
+            },
+            headerTintColor: "white",
+            sceneContainerStyles: {
+              backgroundColor: "#3f2f25",
+            },
+            drawerContentStyle: {
+              backgroundColor: "#3f2f25"
+            },
+            drawerInactiveTintColor: 'white',
+            drawerActiveTintColor: '#351401',
+            drawerActiveBackgroundColor: '#e4baa1'
+    }}
+  >
+    <Drawer.Screen name="Categories" component={CategoriesScreen} options={{
+      title: 'All Categories',
+      drawerIcon: ({color, size}) => <Ionicons color={color} size={size} name="list" />
+    }} />
+    <Drawer.Screen name="Favorites" component={FavoritesScreen}  options={{
+      title: 'Favorites',
+      drawerIcon: ({color, size}) => <Ionicons color={color} size={size} name="star" />
+    }}
+    
+     />
+  </Drawer.Navigator>
+}
 
 export default function App() {
   return (
@@ -25,13 +60,10 @@ export default function App() {
           }}
         >
           <Stack.Screen
-            name="Meal Categories"
-            component={CategoriesScreen}
+            name="Drawer"
+            component={DrawerNavigator}
             options={{
-              title: "All Categories",
-              headerStyle: {
-                backgroundColor: "#340303ff",
-              },
+              headerShown: false
             }}
           ></Stack.Screen>
           <Stack.Screen
@@ -47,11 +79,6 @@ export default function App() {
           <Stack.Screen
             name="MealDetails"
             component={MealDetailsScreen}
-            // options={{
-            //   headerRight: () => {
-            //     return <Button title="Tap Me!" />
-            //   }
-            // }}
           ></Stack.Screen>
         </Stack.Navigator>
       </NavigationContainer>
