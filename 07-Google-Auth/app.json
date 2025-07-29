@@ -1,0 +1,53 @@
+{
+  "expo": {
+    "name": "07-Google-Auth",
+    "slug": "07-Google-Auth",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "07googleauth",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.chethanspoojary.googleauth"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.chethanspoojary.googleauth"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "f7fc4799-baba-4cb7-ac5c-c8db9614d5a9"
+      },
+      "GOOGLE_IOS_CLIENT_ID": "867987030313-09rrlqrp1se9jk3f9m80h9g34f5k5t3h.apps.googleusercontent.com",
+      "GOOGLE_ANDROID_CLIENT_ID": "867987030313-lqmlnpsq93hmanjo3ebnsbkmjof402np.apps.googleusercontent.com",
+      "GOOGLE_WEB_CLIENT_ID": "867987030313-k02a59bugg9jjtl92s0637irvb5j6n6o.apps.googleusercontent.com"
+    }
+  }
+}
