@@ -9,61 +9,91 @@ import AllTranscations from "./screens/AllTranscations";
 import Plans from "./screens/Plans";
 import { GlobalStyles } from "./constants/styles";
 import {Ionicons} from '@expo/vector-icons'
+import IconButton from "./components/UI/IconButton";
+import HeaderText from "./components/UI/HeaderText";
 
 const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
 
+
+
 function TransactionOverview() {
   return <BottomTabs.Navigator screenOptions={{
-    headerStyle: { backgroundColor: GlobalStyles.colors.primary800},
+    contentStyle: {
+      backgroundColor: GlobalStyles.colors.bgColor
+    },
+    headerStyle: { backgroundColor: GlobalStyles.colors.bgColor},
     headerTintColor: 'white',
-    tabBarStyle: {backgroundColor: GlobalStyles.colors.primary800},
+    tabBarStyle: {backgroundColor: GlobalStyles.colors.bgColor},
     tabBarActiveTintColor: GlobalStyles.colors.accent500,
     tabBarInactiveTintColor: 'white',
   }}>
-    <BottomTabs.Screen name="RecentTransactions" component={RecentTransactions} 
-    options={
-      {
-        title: 'Recent Transaction',
-        tabBarLabel:'Recent',
+    <BottomTabs.Screen 
+      name="RecentTransactions" 
+      component={RecentTransactions} 
+      options={({navigation}) => ({
+        title: '',
+        headerTitle: '',
+        tabBarLabel: 'Recent',
+        headerLeft: () => <HeaderText text="Transactions" />,
+        headerRight: ({tintColor}) => <IconButton icon='add' size={24} color={tintColor} onPress={() => {
+          navigation.navigate('ManageTransaction', {
+            action: 'ADD'
+          })
+        }}/>,
         tabBarIcon: ({color, size}) => (
           <Ionicons name="hourglass-outline" size={size} color={color} />
         )
-
-      }
-    }
+      })}
     />
-    <BottomTabs.Screen name="AllTranscations" component={AllTranscations} options={
-      {
-        title: 'All Transaction',
-        tabBarLabel:'All',
+    <BottomTabs.Screen 
+      name="AllTranscations" 
+      component={AllTranscations} 
+      options={{
+        title: '',
+        headerTitle: '',
+        tabBarLabel: 'All',
+        headerLeft: () => <HeaderText text="Archive" />,
+        headerRight: ({tintColor}) => <IconButton icon='add' size={24} color={tintColor} onPress={() => {}}/>,
         tabBarIcon: ({color, size}) => (
           <Ionicons name="calendar-outline" size={size} color={color} />
         )
-
-      }
-    }/>
-    <BottomTabs.Screen name="Plans" component={Plans} options={
-      {
-        title: 'Plans',
-        tabBarLabel:'Plans',
+      }}
+    />
+    <BottomTabs.Screen 
+      name="Plans" 
+      component={Plans} 
+      options={{
+        title: '',
+        headerTitle: '',
+        tabBarLabel: 'Plans',
+        headerLeft: () => <HeaderText text="Plans" />,
+        headerRight: ({tintColor}) => <IconButton icon='add' size={24} color={tintColor} onPress={() => {}}/>,
+        
         tabBarIcon: ({color, size}) => (
           <Ionicons name="book-outline" size={size} color={color} />
         )
-
-      }
-    }/>
+      }}
+    />
   </BottomTabs.Navigator>
 }
 
 export default function App() {
   return (
     <>
-      <StatusBar style="auto" />
-      <NavigationContainer>
-        <Stack.Navigator>
+      <StatusBar style="light" />
+      <NavigationContainer >
+        <Stack.Navigator screenOptions={{
+         headerStyle: { backgroundColor: GlobalStyles.colors.bgColor},
+         headerTintColor: 'white',
+    tabBarStyle: {backgroundColor: GlobalStyles.colors.bgColor},
+    tabBarActiveTintColor: GlobalStyles.colors.accent500,
+    tabBarInactiveTintColor: 'white',
+      }}>
           <Stack.Screen name="TransactionOverview" component={TransactionOverview} options={{headerShown: false}} />
-          <Stack.Screen name="ManageTransaction" component={ManageTransaction} />
+          <Stack.Screen name="ManageTransaction" component={ManageTransaction} options={{
+            title: 'Add Expenses'
+          }} />
         </Stack.Navigator>
       </NavigationContainer>
     </>
@@ -73,7 +103,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
   },

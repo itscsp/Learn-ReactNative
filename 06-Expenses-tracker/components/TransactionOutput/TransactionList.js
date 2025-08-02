@@ -1,9 +1,10 @@
 import { View, Text, FlatList } from 'react-native'
 import React from 'react'
+import AccordionItem from '../Accordion/AccordionItem'
 
 
 function renderExpensesItem(itemData) {
-  return <Text>{itemData?.item?.amount}</Text>
+  return <AccordionItem data={itemData?.item} />
 }
 
 export default function TransactionList({data}) {

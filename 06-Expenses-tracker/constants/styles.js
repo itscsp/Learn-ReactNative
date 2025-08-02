@@ -1,13 +1,15 @@
 export const GlobalStyles = {
   colors: {
+    //background
+    bgColor: 'hsl(0, 0%, 8%)',
     // Primary Theme Colors (Calm Blue Palette)
-    primary50: '#e3f2fd',     // very light blue
+    primary50: '#efddddff',     // very light blue
     primary100: '#bbdefb',
-    primary200: '#90caf9',
-    primary400: '#42a5f5',
-    primary500: '#2196f3',     // primary app color
-    primary700: '#1976d2',
-    primary800: '#1565c0',
+    primary200: '#353739ff',
+    primary400: '#14171aff',
+    primary500: '#1f1a1a89',     // primary app color
+    primary700: '#000000ff',
+    primary800: '#000000ff',
 
     // Accent Color (for highlights)
     accent500: '#ffb300',      // Amber
@@ -25,5 +27,9 @@ export const GlobalStyles = {
 
     gray500: '#9e9e9e',
     gray700: '#616161',
+
+    edit:'rgb(52, 152, 219)',
+    delete:'rgb(192, 57, 43)'
+
   },
 };
