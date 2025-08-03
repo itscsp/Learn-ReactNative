@@ -10,3 +10,22 @@ export const chooseTitle = (action) => {
             return '';
     }   
 }
+
+export const goBack = (navigation) => {
+    return navigation.goBack()
+}
+
+export const months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
+]

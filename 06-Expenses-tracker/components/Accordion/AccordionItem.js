@@ -14,7 +14,7 @@ import IconButton from "../UI/IconButton";
 import TextButton from "../UI/TextButton";
 import { useNavigation } from "@react-navigation/native";
 
-export default function AccordionItem({ data }) {
+export default function AccordionItem({ data, month }) {
   const [isOpen, setIsOpen] = useState(false);
   const navigation = useNavigation();
   const amountColor =
@@ -68,6 +68,7 @@ export default function AccordionItem({ data }) {
                 {
                   navigation.navigate("ManageTransaction", {
                     expenseId: data.id,
+                    month: month,
                     action: 'DELETE'
                   });
                 }

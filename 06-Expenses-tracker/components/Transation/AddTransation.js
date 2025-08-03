@@ -4,9 +4,13 @@ import { GlobalStyles } from '../../constants/styles';
 import Card from '../UI/Card';
 import TextButton from '../UI/TextButton';
 import { useNavigation } from '@react-navigation/native';
+import { goBack } from '../../constants/functions';
 
 export default function AddTransation() {
 const navigation = useNavigation();
+  const addTransationHandler = () => {
+    
+  }
   return (
        <View style={styles.container}>
          <Card>
@@ -21,9 +25,7 @@ const navigation = useNavigation();
              <View style={styles.buttonGroup}>
                <TextButton
                  bgColor={GlobalStyles.colors.gray500}
-                 onPress={() => {
-                   navigation.navigate("RecentTransactions");
-                 }}
+                 onPress={() => goBack(navigation)}
                >
                  Cancel
                </TextButton>

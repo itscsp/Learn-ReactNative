@@ -8,6 +8,9 @@ import AddTransation from "../components/Transation/AddTransation";
 export default function ManageTransaction({ route, navigation }) {
   const transactionId = route.params?.expenseId;
   const action = route.params?.action;
+  const month = route.params?.month;
+  const transactionData = {"amount": 40001, "category": "Company updated", "date": "2025-01-05", "description": "Salary for January updated", "type": "Income"}
+
 
   console.log("transactionId: ", transactionId);
   console.log("action: ", action);
@@ -22,9 +25,9 @@ export default function ManageTransaction({ route, navigation }) {
     case "ADD":
       return <AddTransation />
     case "EDIT":
-      return  <EditTransation />;;
+      return  <EditTransation id={transactionId} month={month} transactionData={transactionData} />;;
     case "DELETE":
-      return <DeleteTransation />;
+      return <DeleteTransation id={transactionId} month={month} />;
     default:
       return (
         <View>

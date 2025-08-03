@@ -1,12 +1,15 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useContext } from "react";
 import Card from "../UI/Card";
 import { GlobalStyles } from "../../constants/styles";
 import TextButton from "../UI/TextButton";
 import { useNavigation } from "@react-navigation/native";
+import { goBack } from "../../constants/functions";
+import { TransationContext } from "../../store/transaction-context";
 
-export default function DeleteTransaction({}) {
+export default function DeleteTransaction({id, month}) {
     const navigation = useNavigation();
+    const transactionCtx = useContext(TransationContext)
   return (
     <View style={styles.container}>
       <Card>
@@ -21,19 +24,18 @@ export default function DeleteTransaction({}) {
           <View style={styles.buttonGroup}>
             <TextButton
               bgColor={GlobalStyles.colors.gray500}
-              onPress={() => {
-                navigation.navigate("RecentTransactions");
-              }}
+              onPress={() => goBack(navigation)}
             >
               Cancel
             </TextButton>
             <TextButton
               bgColor={GlobalStyles.colors.delete}
               onPress={() => {
-                console.log('Delte this.')
+                transactionCtx.deleteTransaction(month, id)
+                goBack(navigation)
               }}
             >
-              Delete
+              Yes, Please
             </TextButton>
           </View>
         </View>
