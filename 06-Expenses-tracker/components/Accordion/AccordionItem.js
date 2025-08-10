@@ -56,6 +56,7 @@ export default function AccordionItem({ data, month }) {
               onPress={() => {
                 navigation.navigate("ManageTransaction", {
                   expenseId:data.id,
+                    month: month,
                   action: 'EDIT'
                 });
               }}

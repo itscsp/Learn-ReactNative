@@ -5,6 +5,7 @@ import { GlobalStyles } from "../../constants/styles";
 import { formatINR } from "../../helper/helperFunctions";
 
 export default function TransactionSummary({summary}) {
+
   const summaryText = summary?.sign ? GlobalStyles.colors.income500 : GlobalStyles.colors.expense500;
   return (
     <View style={styles.container}>

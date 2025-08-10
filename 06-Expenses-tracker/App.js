@@ -58,7 +58,7 @@ function TransactionOverview() {
       <BottomTabs.Screen
         name="AllTransactions"
         component={AllTransactions}
-        options={{
+        options={({ navigation }) => ({
           title: "",
           headerTitle: "",
           tabBarLabel: "All",
@@ -68,13 +68,17 @@ function TransactionOverview() {
               icon="add"
               size={24}
               color={tintColor}
-              onPress={() => {}}
+              onPress={() => {
+                navigation.navigate("ManageTransaction", {
+                  action: "ADD",
+                });
+              }}
             />
           ),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="calendar-outline" size={size} color={color} />
           ),
-        }}
+        })}
       />
       <BottomTabs.Screen
         name="Plans"

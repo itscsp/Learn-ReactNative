@@ -7,7 +7,8 @@ import { useNavigation } from "@react-navigation/native";
 import { goBack } from "../../constants/functions";
 import { TransationContext } from "../../store/transaction-context";
 
-export default function EditTransation(id, month, transactionData) {
+export default function EditTransation({id, month, transactionData}) {
+
   const navigation = useNavigation();
   const transactionCtx = useContext(TransationContext);
   return (
@@ -35,7 +36,7 @@ export default function EditTransation(id, month, transactionData) {
                 goBack(navigation);
               }}
             >
-              Update
+              Edit
             </TextButton>
           </View>
         </View>

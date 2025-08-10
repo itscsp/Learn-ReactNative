@@ -6,14 +6,11 @@ import EditTransation from "../components/Transation/EditTransation";
 import AddTransation from "../components/Transation/AddTransation";
 
 export default function ManageTransaction({ route, navigation }) {
+
   const transactionId = route.params?.expenseId;
   const action = route.params?.action;
-  const month = route.params?.month;
-  const transactionData = {"amount": 40001, "category": "Company updated", "date": "2025-01-05", "description": "Salary for January updated", "type": "Income"}
-
-
-  console.log("transactionId: ", transactionId);
-  console.log("action: ", action);
+  const month = route.params?.month ? route.params?.month  : 'April';
+  const transactionData = {"amount": 40003, "category": "Company updated", "date": "2025-01-05", "description": "Salary for January updated", "type": "Income"}
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -23,9 +20,9 @@ export default function ManageTransaction({ route, navigation }) {
 
   switch (action) {
     case "ADD":
-      return <AddTransation />
+      return <AddTransation month={month} transactionData={transactionData} />
     case "EDIT":
-      return  <EditTransation id={transactionId} month={month} transactionData={transactionData} />;;
+      return  <EditTransation id={transactionId} month={month} transactionData={transactionData} />;
     case "DELETE":
       return <DeleteTransation id={transactionId} month={month} />;
     default:

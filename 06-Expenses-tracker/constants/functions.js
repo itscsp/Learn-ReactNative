@@ -29,3 +29,8 @@ export const months = [
     'November',
     'December'
 ]
+
+export const getMonthByDate = (date) => {
+    const d = new Date(date);
+    return months[d.getMonth()];
+}
