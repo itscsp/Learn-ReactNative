@@ -1,9 +1,9 @@
 import { View, Text } from "react-native";
 import React, { useLayoutEffect } from "react";
 import { chooseTitle } from "../constants/functions";
-import DeleteTransation from "../components/Transation/DeleteTransation";
-import EditTransation from "../components/Transation/EditTransation";
-import AddTransation from "../components/Transation/AddTransation";
+import DeleteTransation from "../components/Transaction/DeleteTransation";
+import EditTransation from "../components/Transaction/EditTransation";
+import AddTransation from "../components/Transaction/AddTransation";
 
 export default function ManageTransaction({ route, navigation }) {
 

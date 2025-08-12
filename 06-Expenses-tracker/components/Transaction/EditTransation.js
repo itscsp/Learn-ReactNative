@@ -6,11 +6,13 @@ import TextButton from "../UI/TextButton";
 import { useNavigation } from "@react-navigation/native";
 import { goBack } from "../../constants/functions";
 import { TransationContext } from "../../store/transaction-context";
+import TransactionForm from "./TransactionForm";
 
 export default function EditTransation({id, month, transactionData}) {
 
   const navigation = useNavigation();
   const transactionCtx = useContext(TransationContext);
+  let data = transactionCtx?.transactions[month]?.TRANSACTIONS.filter((item) => item.id == id);
   return (
     <View style={styles.container}>
       <Card>
@@ -18,27 +20,7 @@ export default function EditTransation({id, month, transactionData}) {
           <Text style={styles.cardTitle}>Edit</Text>
         </View>
         <View style={styles.cardBody}>
-          <Text style={styles.cardMessage}>
-            This action will permanently delete the transaction. Do you want to
-            continue?
-          </Text>
-          <View style={styles.buttonGroup}>
-            <TextButton
-              bgColor={GlobalStyles.colors.gray500}
-              onPress={() => goBack(navigation)}
-            >
-              Cancel
-            </TextButton>
-            <TextButton
-              bgColor={GlobalStyles.colors.delete}
-              onPress={() => {
-                transactionCtx.editTransaction(month, id, transactionData);
-                goBack(navigation);
-              }}
-            >
-              Edit
-            </TextButton>
-          </View>
+          <TransactionForm action='EDIT' month={month} transactionData={data} />
         </View>
       </Card>
     </View>

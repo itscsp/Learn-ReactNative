@@ -6,6 +6,7 @@ export const GlobalStyles = {
     primary50: '#efddddff',     // very light blue
     primary100: '#bbdefb',
     primary200: '#353739ff',
+    primary200: '#1d1e1fff',
     primary400: '#14171aff',
     primary500: '#1f1a1a89',     // primary app color
     primary700: '#000000ff',
