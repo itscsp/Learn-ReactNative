@@ -11,7 +11,7 @@ export default function RadioInput({ setType, type }) {
             styles.radioOption,
             type === "Expense" && styles.selectedOption,
           ]}
-          onPress={() => setType("Expenses")}
+          onPress={() => setType("Expense")}
         >
           <View
             style={[

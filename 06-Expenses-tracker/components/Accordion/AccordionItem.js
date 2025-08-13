@@ -46,17 +46,17 @@ export default function AccordionItem({ data, month }) {
       </TouchableWithoutFeedback>
       {isOpen && (
         <View style={styles.content}>
-          <Text style={styles.text}>July 1, 2025</Text>
+          <Text style={styles.text}>{data.date}</Text>
 
-          <Text style={styles.text}>Description</Text>
-          <Text style={styles.text}>Category: Essentials</Text>
+          <Text style={styles.text}>Description: {data.description}</Text>
+          <Text style={styles.text}>Category: {data.category}</Text>
           <View style={styles.buttonGroup}>
             <TextButton
               bgColor={GlobalStyles.colors.edit}
               onPress={() => {
                 navigation.navigate("ManageTransaction", {
                   expenseId:data.id,
-                    month: month,
+                  month: month,
                   action: 'EDIT'
                 });
               }}

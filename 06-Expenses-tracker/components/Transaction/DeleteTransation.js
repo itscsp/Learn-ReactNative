@@ -7,8 +7,8 @@ import { useNavigation } from "@react-navigation/native";
 import { goBack } from "../../constants/functions";
 import { TransationContext } from "../../store/transaction-context";
 
-export default function DeleteTransaction({id, month}) {
-    const navigation = useNavigation();
+export default function DeleteTransaction({onCancel, id, month}) {
+    
     const transactionCtx = useContext(TransationContext)
   return (
     <View style={styles.container}>
@@ -24,7 +24,7 @@ export default function DeleteTransaction({id, month}) {
           <View style={styles.buttonGroup}>
             <TextButton
               bgColor={GlobalStyles.colors.gray500}
-              onPress={() => goBack(navigation)}
+              onPress={onCancel}
             >
               Cancel
             </TextButton>
@@ -32,7 +32,7 @@ export default function DeleteTransaction({id, month}) {
               bgColor={GlobalStyles.colors.delete}
               onPress={() => {
                 transactionCtx.deleteTransaction(month, id)
-                goBack(navigation)
+                onCancel()
               }}
             >
               Yes, Please

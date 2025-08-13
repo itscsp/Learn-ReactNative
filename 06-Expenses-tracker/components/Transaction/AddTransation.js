@@ -8,7 +8,7 @@ import { goBack } from "../../constants/functions";
 import { TransationContext } from "../../store/transaction-context";
 import TransactionForm from "./TransactionForm";
 
-export default function AddTransation({month, transactionData }) {
+export default function AddTransation({onCancel, month }) {
 
   return (
     <View style={styles.container}>
@@ -17,7 +17,7 @@ export default function AddTransation({month, transactionData }) {
           <Text style={styles.cardTitle}>Add</Text>
         </View>
         <View style={styles.cardBody}>
-          <TransactionForm action='ADD' month={month}/>
+          <TransactionForm action='ADD' onCancel={onCancel} month={month} />
         </View>
       </Card>
     </View>

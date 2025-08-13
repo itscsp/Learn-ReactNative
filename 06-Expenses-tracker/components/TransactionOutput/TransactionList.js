@@ -18,7 +18,7 @@ export default function TransactionList({data}) {
   }
 
   return (
-    <View>
+    <View style={styles.listContainer}>
         <FlatList data={data}
         renderItem={renderExpensesItem}
         keyExtractor={(item) => item.id}
@@ -28,7 +28,9 @@ export default function TransactionList({data}) {
 }
 
 const styles = StyleSheet.create({
+
   NotFound: {
     textAlign: "center"
   }
+
 })

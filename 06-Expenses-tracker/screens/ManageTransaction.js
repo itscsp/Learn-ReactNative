@@ -1,16 +1,16 @@
 import { View, Text } from "react-native";
 import React, { useLayoutEffect } from "react";
-import { chooseTitle } from "../constants/functions";
+import { chooseTitle, goBack } from "../constants/functions";
 import DeleteTransation from "../components/Transaction/DeleteTransation";
 import EditTransation from "../components/Transaction/EditTransation";
 import AddTransation from "../components/Transaction/AddTransation";
+import { useNavigation } from "@react-navigation/native";
+import { getCurrentMonthName } from "../helper/helperFunctions";
 
 export default function ManageTransaction({ route, navigation }) {
-
   const transactionId = route.params?.expenseId;
   const action = route.params?.action;
-  const month = route.params?.month ? route.params?.month  : 'April';
-  const transactionData = {"amount": 40003, "category": "Company updated", "date": "2025-01-05", "description": "Salary for January updated", "type": "Income"}
+  const month = route.params?.month ? route.params?.month : getCurrentMonthName(new Date()); 
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -18,13 +18,17 @@ export default function ManageTransaction({ route, navigation }) {
     });
   }, [navigation, action]); // Run effect when navigation or action changes
 
+  function cancelHandler(){
+    goBack(navigation)
+  }
+
   switch (action) {
     case "ADD":
-      return <AddTransation month={month} transactionData={transactionData} />
+      return <AddTransation onCancel={cancelHandler} month={month}/>
     case "EDIT":
-      return  <EditTransation id={transactionId} month={month} transactionData={transactionData} />;
+      return  <EditTransation onCancel={cancelHandler} id={transactionId} month={month}/>;
     case "DELETE":
-      return <DeleteTransation id={transactionId} month={month} />;
+      return <DeleteTransation onCancel={cancelHandler} id={transactionId} month={month} />;
     default:
       return (
         <View>
