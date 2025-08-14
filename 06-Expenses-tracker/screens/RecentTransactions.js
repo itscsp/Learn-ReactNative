@@ -43,7 +43,7 @@ export default function RecentTransactions() {
   );
 
   return (
-    <>
+    <View style={styles.wrapper}>
       {currentData.length ? (
         <FlatList
           data={currentData}
@@ -68,11 +68,15 @@ export default function RecentTransactions() {
           </View>
         </View>
       )}
-    </>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+        marginHorizontal: 16,
+  },
+
   fallbackContainer: {
     justifyContent: "center",
     alignItems: "center",

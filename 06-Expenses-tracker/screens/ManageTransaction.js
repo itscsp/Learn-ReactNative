@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import React, { useLayoutEffect } from "react";
 import { chooseTitle, goBack } from "../constants/functions";
 import DeleteTransation from "../components/Transaction/DeleteTransation";
@@ -22,18 +22,32 @@ export default function ManageTransaction({ route, navigation }) {
     goBack(navigation)
   }
 
-  switch (action) {
-    case "ADD":
-      return <AddTransation onCancel={cancelHandler} month={month}/>
-    case "EDIT":
-      return  <EditTransation onCancel={cancelHandler} id={transactionId} month={month}/>;
-    case "DELETE":
-      return <DeleteTransation onCancel={cancelHandler} id={transactionId} month={month} />;
-    default:
-      return (
-        <View>
-          <Text>No action.</Text>
-        </View>
-      );
+  function pageHandler(action) {
+    switch (action) {
+      case "ADD":
+        return <AddTransation onCancel={cancelHandler} month={month}/>
+      case "EDIT":
+        return  <EditTransation onCancel={cancelHandler} id={transactionId} month={month}/>;
+      case "DELETE":
+        return <DeleteTransation onCancel={cancelHandler} id={transactionId} month={month} />;
+      default:
+        return (
+          <View>
+            <Text>No action.</Text>
+          </View>
+        );
+    }
   }
+
+  return (
+    <View style={styles.wrapper}>
+      {pageHandler(action)}
+    </View>
+  )
 }
+
+const styles = StyleSheet.create({
+  wrapper: {
+        marginHorizontal: 16,
+  },
+});

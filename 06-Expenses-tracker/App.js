@@ -12,6 +12,7 @@ import IconButton from "./components/UI/IconButton";
 import HeaderText from "./components/UI/HeaderText";
 import TransationContextProvider from "./store/transaction-context";
 import AllTransactions from "./screens/AllTransactions";
+import AddPlan from "./components/Plans/AddPlan";
 
 const Stack = createNativeStackNavigator();
 const BottomTabs = createBottomTabNavigator();
@@ -83,7 +84,7 @@ function TransactionOverview() {
       <BottomTabs.Screen
         name="Plans"
         component={Plans}
-        options={{
+        options={({ navigation }) => ({
           title: "",
           headerTitle: "",
           tabBarLabel: "Plans",
@@ -93,14 +94,16 @@ function TransactionOverview() {
               icon="add"
               size={24}
               color={tintColor}
-              onPress={() => {}}
+              onPress={() => {
+                navigation.navigate("AddPlans");
+              }}
             />
           ),
 
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="book-outline" size={size} color={color} />
           ),
-        }}
+        })}
       />
     </BottomTabs.Navigator>
   );
@@ -126,11 +129,20 @@ export default function App() {
               component={TransactionOverview}
               options={{ headerShown: false }}
             />
+
             <Stack.Screen
               name="ManageTransaction"
               component={ManageTransaction}
               options={{
                 title: "Add Expenses",
+              }}
+            />
+           
+            <Stack.Screen
+              name="AddPlans"
+              component={AddPlan}
+              options={{
+                title: "Add Plans",
               }}
             />
           </Stack.Navigator>

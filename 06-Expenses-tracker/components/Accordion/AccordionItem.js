@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     backgroundColor: GlobalStyles.colors.primary800,
     borderRadius: 8,
     marginVertical: 4,
-    marginHorizontal: 16,
+
     overflow: "hidden",
   },
 

@@ -1,4 +1,4 @@
-import { View, FlatList } from "react-native";
+import { View, FlatList, StyleSheet } from "react-native";
 import React, { useContext } from "react";
 import { TransationContext } from "../store/transaction-context";
 import { months } from "../constants/functions";
@@ -23,11 +23,21 @@ export default function AllTransactions() {
   );
 
   return (
-    <FlatList
-      data={monthsData}
-      renderItem={renderMonthItem}
-      keyExtractor={(item) => item.key}
-      contentContainerStyle={{ paddingBottom: 24 }}
-    />
+    <View style={styles.wrapper}>
+
+      <FlatList
+        data={monthsData}
+        renderItem={renderMonthItem}
+        keyExtractor={(item) => item.key}
+        contentContainerStyle={{ paddingBottom: 24 }}
+      />
+    </View>
   );
 }
+
+
+const styles = StyleSheet.create({
+  wrapper: {
+        marginHorizontal: 16,
+  },
+});
