@@ -6,9 +6,9 @@ import PlansSummary from '../components/PlansOutput/PlansSummary'
 export default function Plans() {
   let plans = [
     { "id":1, "title": 'testing', "amount" : `1000`, 'status':'PAID' },
-    { "id":1, "title": 'testing', "amount" : `1000`, 'status':'PAID' },
-    { "id":1, "title": 'testing', "amount" : `1000`, 'status':'PAID' },
-    { "id":1, "title": 'testing', "amount" : `1000`, 'status':'PAID' }
+    { "id":2, "title": 'testing', "amount" : `1000`, 'status':'PAID' },
+    { "id":3, "title": 'testing', "amount" : `1000`, 'status':'PAID' },
+    { "id":4, "title": 'testing', "amount" : `1000`, 'status':'PAID' }
 
   ]
   return (

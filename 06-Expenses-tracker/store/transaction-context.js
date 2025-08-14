@@ -3,15 +3,7 @@ import { act, createContext, useReducer, useState } from "react";
 const TRANSACTIONS = {
   2025: {
     January: {
-      SUMMARY: {
-        id: "s1",
-        month: "January 2025",
-        income: 40000,
-        expenses: 25000,
-        loan: 10000,
-        net: 15000,
-        sign: true,
-      },
+     
       TRANSACTIONS: [
         {
           id: "t1",
@@ -464,6 +456,7 @@ const TRANSACTIONS = {
     },
   },
 };
+
 export const TransationContext = createContext({
   transactions: {},
   addTransaction: (month, transactionData) => {},

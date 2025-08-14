@@ -1,5 +1,5 @@
 import { FlatList, View, Text, StyleSheet } from "react-native";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { TransationContext } from "../store/transaction-context";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import TransactionSummary from "../components/TransactionOutput/TransactionSummary";
@@ -7,6 +7,7 @@ import TransactionList from "../components/TransactionOutput/TransactionList";
 import TextButton from "../components/UI/TextButton";
 import { GlobalStyles } from "../constants/styles";
 import { getCurrentMonthName } from "../helper/helperFunctions";
+import { fetchTransaction } from "../helper/http";
 
 export default function RecentTransactions() {
     const navigation = useNavigation();
@@ -34,6 +35,16 @@ export default function RecentTransactions() {
       }
     }, [transactionCtx])
   );
+
+  useEffect(() => {
+    async function getTransation() {
+      let data = await fetchTransaction()
+      console.log('Data', data.data)
+    }
+
+    getTransation();
+    
+  }, [])
 
   const renderMonthItem = ({ item }) => (
     <View style={{ marginBottom: 16 }}>

@@ -5,6 +5,7 @@ import RadioInput from "./RadioInput";
 import TextButton from "../UI/TextButton";
 import { GlobalStyles } from "../../constants/styles";
 import { TransationContext } from "../../store/transaction-context";
+import storeTransaction from "../../helper/http";
 
 export default function TransactionForm({ action, onCancel, month, transactionData }) {
   const transactionCtx = useContext(TransationContext);
@@ -60,6 +61,7 @@ export default function TransactionForm({ action, onCancel, month, transactionDa
     };
     
     if (action === 'ADD') {
+      storeTransaction(formattedInput);
       transactionCtx.addTransaction(month, formattedInput);
     } else {
       transactionCtx.editTransaction(month, Data.id, formattedInput);
