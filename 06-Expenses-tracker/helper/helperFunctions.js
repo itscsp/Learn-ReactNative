@@ -1,5 +1,7 @@
 export const formatINR = (amount) => {
-  return amount.toLocaleString("en-IN", { style: "currency", currency: "INR" });
+  const n = typeof amount === 'string' ? Number(amount) : amount;
+  const safe = Number.isFinite(n) ? n : 0;
+  return safe.toLocaleString("en-IN", { style: "currency", currency: "INR" });
 };
 
 export const getDay = (dateString) => {

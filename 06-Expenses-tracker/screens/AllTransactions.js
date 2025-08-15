@@ -8,12 +8,16 @@ import TransactionList from "../components/TransactionOutput/TransactionList";
 
 export default function AllTransactions() {
   const transactionCtx = useContext(TransationContext);
-  // Prepare data for FlatList: each item is a month
-  const monthsData = months.map((month) => ({
-    key: month,
-    summary: transactionCtx.transactions[month]?.SUMMARY,
-    transactions: transactionCtx.transactions[month]?.TRANSACTIONS || [],
-  }));
+  // Build from only months present in store (and with transactions), ordered by calendar
+  const availableMonths = Object.keys(transactionCtx?.transactions || {});
+  const monthsData = availableMonths
+    .filter((m) => (transactionCtx.transactions[m]?.TRANSACTIONS?.length || 0) > 0)
+    .sort((a, b) => months.indexOf(a) - months.indexOf(b))
+    .map((month) => ({
+      key: month,
+      summary: transactionCtx.transactions[month]?.SUMMARY,
+      transactions: transactionCtx.transactions[month]?.TRANSACTIONS || [],
+    }));
 
   const renderMonthItem = ({ item }) => (
     <View style={{ marginBottom: 16 }}>

@@ -1,11 +1,7 @@
 import { View, Text, StyleSheet } from "react-native";
-import React, { useContext } from "react";
+import React from "react";
 import { GlobalStyles } from "../../constants/styles";
 import Card from "../UI/Card";
-import TextButton from "../UI/TextButton";
-import { useNavigation } from "@react-navigation/native";
-import { goBack } from "../../constants/functions";
-import { TransationContext } from "../../store/transaction-context";
 import TransactionForm from "./TransactionForm";
 
 export default function AddTransation({onCancel, month }) {

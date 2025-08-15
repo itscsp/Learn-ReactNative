@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet } from "react-native";
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import { GlobalStyles } from "../../constants/styles";
 import Card from "../UI/Card";
 import { TransationContext } from "../../store/transaction-context";
@@ -7,7 +7,8 @@ import TransactionForm from "./TransactionForm";
 
 export default function EditTransation({onCancel, id, month}) {
   const transactionCtx = useContext(TransationContext);
-  let data = transactionCtx?.transactions[month]?.TRANSACTIONS.filter((item) => item.id == id);
+  const txns = transactionCtx?.transactions?.[month]?.TRANSACTIONS || [];
+  const data = useMemo(() => txns.find((item) => String(item.id) === String(id)), [txns, id]);
 
 
   return (

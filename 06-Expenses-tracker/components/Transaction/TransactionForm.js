@@ -5,19 +5,18 @@ import RadioInput from "./RadioInput";
 import TextButton from "../UI/TextButton";
 import { GlobalStyles } from "../../constants/styles";
 import { TransationContext } from "../../store/transaction-context";
-import storeTransaction from "../../helper/http";
+import { storeTransaction } from "../../helper/http";
 
 export default function TransactionForm({ action, onCancel, month, transactionData }) {
   const transactionCtx = useContext(TransationContext);
-  let Data = action == 'ADD' ? {} : transactionData[0]
-  console.log('Transaction form:',   Data)
+  const Data = action === 'ADD' ? null : (transactionData || null);
 
   const [inputValue, setInputValue] = useState({
-    type: action === 'ADD' ? 'Expense' : Data.type,
-    amount: action === 'ADD' ? "" : Data.amount.toString(),
-    date: action === 'ADD' ? "" : Data.date,
-    description: action === 'ADD' ? "" : Data.description,
-    category: action === 'ADD' ? "" : Data.category,
+    type: action === 'ADD' ? 'Expense' : (Data?.type || 'Expense'),
+    amount: action === 'ADD' ? "" : (Data?.amount != null ? String(Data.amount) : ""),
+    date: action === 'ADD' ? "" : (Data?.date || ""),
+    description: action === 'ADD' ? "" : (Data?.description || ""),
+    category: action === 'ADD' ? "" : (Data?.category || ""),
   });
   
   const [inputIsValid, setInputIsValid] = useState({
@@ -34,6 +33,20 @@ export default function TransactionForm({ action, onCancel, month, transactionDa
         [inputIdentifier]: enteredValue,
       };
     });
+  }
+
+  // Pick month from date string (YYYY-MM-DD)
+  function getMonthNameFromDate(dateStr) {
+    if (!dateStr || typeof dateStr !== 'string') return null;
+    const parts = dateStr.split('-');
+    if (parts.length !== 3) return null;
+    const mm = parseInt(parts[1], 10);
+    if (Number.isNaN(mm) || mm < 1 || mm > 12) return null;
+    const MONTHS = [
+      'January','February','March','April','May','June',
+      'July','August','September','October','November','December'
+    ];
+    return MONTHS[mm - 1];
   }
 
   const addTransationHandler = () => {
@@ -59,12 +72,28 @@ export default function TransactionForm({ action, onCancel, month, transactionDa
       ...inputValue,
       amount: parseFloat(inputValue.amount)
     };
-    
+
+    // Determine target month from the entered date
+    const targetMonth = getMonthNameFromDate(formattedInput.date);
+    if (!targetMonth) {
+      Alert.alert('Invalid date', 'Could not determine month from date.');
+      return;
+    }
+
     if (action === 'ADD') {
+      // Use month derived from date
       storeTransaction(formattedInput);
-      transactionCtx.addTransaction(month, formattedInput);
+      transactionCtx.addTransaction(targetMonth, formattedInput);
     } else {
-      transactionCtx.editTransaction(month, Data.id, formattedInput);
+      // If month changed, move transaction to new month (delete + add)
+      const currentMonth = month;
+      const idStr = String(Data?.id);
+      if (targetMonth !== currentMonth) {
+        transactionCtx.deleteTransaction(currentMonth, idStr);
+        transactionCtx.addTransaction(targetMonth, formattedInput);
+      } else {
+        transactionCtx.editTransaction(currentMonth, idStr, formattedInput);
+      }
     }
     onCancel();
   };

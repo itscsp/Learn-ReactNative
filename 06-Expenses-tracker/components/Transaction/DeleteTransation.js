@@ -1,10 +1,8 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import React, { useContext } from "react";
 import Card from "../UI/Card";
 import { GlobalStyles } from "../../constants/styles";
 import TextButton from "../UI/TextButton";
-import { useNavigation } from "@react-navigation/native";
-import { goBack } from "../../constants/functions";
 import { TransationContext } from "../../store/transaction-context";
 
 export default function DeleteTransaction({onCancel, id, month}) {
@@ -28,10 +26,11 @@ export default function DeleteTransaction({onCancel, id, month}) {
             >
               Cancel
             </TextButton>
-            <TextButton
+      <TextButton
               bgColor={GlobalStyles.colors.delete}
               onPress={() => {
-                transactionCtx.deleteTransaction(month, id)
+        // Ensure id is a string to match normalized state shape
+        transactionCtx.deleteTransaction(month, String(id));
                 onCancel()
               }}
             >

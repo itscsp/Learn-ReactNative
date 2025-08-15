@@ -14,8 +14,14 @@ export default function Plans() {
   return (
     <ScrollView>
       <View style={styles.wrapper}>
-        <PlansList plans={plans} />
-        <PlansSummary />
+  <PlansList 
+          plans={plans} 
+          onDelete={(id)=>{}}
+          onAddPlan={()=>{}}
+          onReport={()=>{}}
+          onPlan={()=>{}}
+        />
+  <PlansSummary plans={plans} />
       </View>
     </ScrollView>
   )
@@ -23,6 +29,6 @@ export default function Plans() {
 
 const styles = StyleSheet.create({
   wrapper: {
-    rmarginHorizontal: 16,
+    marginHorizontal: 16,
   }
 })
