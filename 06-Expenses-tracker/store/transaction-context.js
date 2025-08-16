@@ -1,4 +1,5 @@
-import { useEffect, createContext, useState, useReducer } from "react";
+import { useEffect, createContext, useState, useReducer, useCallback, useMemo, useRef } from "react";
+import { log } from "../helper/logger";
 import { getTransactions, createTransaction as apiCreate, updateTransaction as apiUpdate, deleteTransaction as apiDelete } from "../helper/http";
 
 // Helpers
@@ -52,18 +53,22 @@ const ensureMonth = (state, monthName, year) => {
 
 function monthFromDate(dateStr) {
   if (!dateStr) return null;
-  const s = String(dateStr);
-  // Try ISO/Date parsing first to support timestamps and ISO strings
-  const d = new Date(s);
+  const s = String(dateStr).trim();
+  // Normalize separators so Android/iOS behave the same for 'YYYY/MM/DD' or 'YYYY-MM-DD'
+  const norm = s.replace(/[\.\/]/g, "-");
+  // Try native Date first (handles timestamps and ISO strings with timezones)
+  const d = new Date(norm);
   if (!isNaN(d.getTime())) {
     const mm = d.getMonth() + 1;
     return MONTHS[mm - 1] || null;
   }
-  // Fallback: expect YYYY-MM-DD
-  const parts = s.split("-");
-  if (parts.length !== 3) return null;
-  const mm = parseInt(parts[1], 10);
-  return MONTHS[mm - 1] || null;
+  // Regex parse YYYY-MM-DD explicitly
+  const m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(norm);
+  if (m) {
+    const mm = parseInt(m[2], 10);
+    return MONTHS[mm - 1] || null;
+  }
+  return null;
 }
 
 function normalizeApiListToYearMap(list, yearStr) {
@@ -227,72 +232,98 @@ function transactionReducer(state, action) {
 function TransationContextProvider({ children }) {
   const [selectedYear] = useState(new Date().getFullYear().toString());
   const [transactionsState, dispatch] = useReducer(transactionReducer, {});
+  const inFlightYearRef = useRef(new Set()); // years in-flight
+  const inFlightMonthRef = useRef(new Set()); // keys like "2025-8"
+  const lastFetchedRef = useRef({ year: {}, month: {} }); // timestamps
+  const LOADER_TTL_MS = 10_000; // 10s guard to avoid rapid refetches
 
   useEffect(() => {
     (async () => {
       try {
-        // Optionally pass filters if your API supports them
-  const apiList = await getTransactions({ year: Number(selectedYear) }).catch(() => undefined);
-  const normalized = normalizeApiListToYearMap(apiList, selectedYear) || {};
+        // Skip if recently fetched or already in-flight
+        const last = lastFetchedRef.current.year[selectedYear] || 0;
+        const now = Date.now();
+        if (now - last < LOADER_TTL_MS || inFlightYearRef.current.has(selectedYear)) {
+          return;
+        }
+        inFlightYearRef.current.add(selectedYear);
+        const apiList = await getTransactions({ year: Number(selectedYear) }).catch(() => undefined);
+        const normalized = normalizeApiListToYearMap(apiList, selectedYear) || {};
         dispatch({ type: "SET_ALL", payload: normalized });
+        lastFetchedRef.current.year[selectedYear] = Date.now();
+        inFlightYearRef.current.delete(selectedYear);
       } catch (e) {
-        console.log("Failed to load transactions:", e?.message || e);
+        log("Failed to load transactions:", e?.message || e);
+        inFlightYearRef.current.delete(selectedYear);
       }
     })();
   }, [selectedYear]);
 
-  async function loadMonth(year, monthNum) {
+  const loadMonth = useCallback(async (year, monthNum) => {
+    const key = `${year}-${monthNum}`;
+    const monthName = MONTHS[Number(monthNum) - 1];
     try {
-  const list = await getTransactions({ year: Number(year), month: Number(monthNum) }).catch(() => undefined);
-  const normalized = normalizeApiListToYearMap(list, String(year)) || {};
-      const monthName = MONTHS[Number(monthNum) - 1];
+      // Skip if data already exists or fetched recently
+      const existing = transactionsState?.[monthName]?.TRANSACTIONS || [];
+      const last = lastFetchedRef.current.month[key] || 0;
+      const now = Date.now();
+      if (existing.length > 0 || now - last < LOADER_TTL_MS || inFlightMonthRef.current.has(key)) {
+        return;
+      }
+      inFlightMonthRef.current.add(key);
+
+      const list = await getTransactions({ year: Number(year), month: Number(monthNum) }).catch(() => undefined);
+      const normalized = normalizeApiListToYearMap(list, String(year)) || {};
       const data = normalized[monthName] || {
         SUMMARY: computeSummary(monthName, String(year), []),
         TRANSACTIONS: [],
       };
       dispatch({ type: "SET_MONTH", payload: { monthName, data } });
+      lastFetchedRef.current.month[key] = Date.now();
+      inFlightMonthRef.current.delete(key);
     } catch (e) {
-      console.log("Failed to load month:", year, monthNum, e?.message || e);
+      log("Failed to load month:", year, monthNum, e?.message || e);
+      inFlightMonthRef.current.delete(key);
     }
-  }
+  }, [transactionsState]);
 
-  function addTransaction(month, transactionData) {
+  const addTransaction = useCallback((month, transactionData) => {
     // Normalize type to lowercase before persisting/dispatching
     const normalized = { ...transactionData, type: capType(transactionData?.type) };
     apiCreate(normalized).catch(() => {});
     dispatch({ type: "ADD", payload: { month, transactionData: normalized }, meta: { year: selectedYear } });
-  }
+  }, [selectedYear]);
 
-  function editTransaction(month, id, transactionData) {
+  const editTransaction = useCallback((month, id, transactionData) => {
     const normalized = { ...transactionData, type: capType(transactionData?.type) };
     apiUpdate(id, normalized).catch(() => {});
     dispatch({ type: "EDIT", payload: { month, id, transactionData: normalized }, meta: { year: selectedYear } });
-  }
+  }, [selectedYear]);
 
-  function deleteTransaction(month, id) {
-  apiDelete(id).catch(() => {});
-  dispatch({ type: "DELETE", payload: { month, id }, meta: { year: selectedYear } });
-  }
+  const deleteTransaction = useCallback((month, id) => {
+    apiDelete(id).catch(() => {});
+    dispatch({ type: "DELETE", payload: { month, id }, meta: { year: selectedYear } });
+  }, [selectedYear]);
 
-  function getMonthlyReport(month, year) {
+  const getMonthlyReport = useCallback((month, year) => {
     const y = year || selectedYear;
     // Optionally update state summary
     dispatch({ type: "REPORT", payload: { month, year: y } });
     const txns = (transactionsState?.[month]?.TRANSACTIONS) || [];
     return computeSummary(month, y, txns);
-  }
+  }, [selectedYear, transactionsState]);
+
+  const contextValue = useMemo(() => ({
+    transactions: transactionsState,
+    addTransaction,
+    editTransaction,
+    deleteTransaction,
+    getMonthlyReport,
+    loadMonth,
+  }), [transactionsState, addTransaction, editTransaction, deleteTransaction, getMonthlyReport, loadMonth]);
 
   return (
-    <TransationContext.Provider
-      value={{
-        transactions: transactionsState,
-        addTransaction,
-        editTransaction,
-        deleteTransaction,
-        getMonthlyReport,
-  loadMonth,
-      }}
-    >
+    <TransationContext.Provider value={contextValue}>
       {children}
     </TransationContext.Provider>
   );

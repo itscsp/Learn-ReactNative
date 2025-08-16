@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, Alert } from "react-native";
+import { StyleSheet, View, Text, Alert, Keyboard } from "react-native";
 import React, { useContext, useState } from "react";
 import Input from "./Input";
 import RadioInput from "./RadioInput";
@@ -6,7 +6,7 @@ import TextButton from "../UI/TextButton";
 import { GlobalStyles } from "../../constants/styles";
 import { TransationContext } from "../../store/transaction-context";
 
-export default function TransactionForm({ action, onCancel, month, transactionData }) {
+export default function TransactionForm({ action, onCancel, month, transactionData, onFocusLast }) {
   const transactionCtx = useContext(TransationContext);
   const Data = action === 'ADD' ? null : (transactionData || null);
 
@@ -104,6 +104,7 @@ export default function TransactionForm({ action, onCancel, month, transactionDa
         label="Amount"
         textInputConfig={{
           keyboardType: "decimal-pad",
+          returnKeyType: 'next',
           onChangeText: inputChangeHandler.bind(this, "amount"),
           value: inputValue.amount,
           placeholder: "Enter amount",
@@ -117,6 +118,7 @@ export default function TransactionForm({ action, onCancel, month, transactionDa
         textInputConfig={{
           placeholder: "YYYY-MM-DD",
           maxLength: 10,
+          returnKeyType: 'next',
           onChangeText: inputChangeHandler.bind(this, "date"),
           value: inputValue.date,
         }}
@@ -128,6 +130,8 @@ export default function TransactionForm({ action, onCancel, month, transactionDa
         label="Description"
         textInputConfig={{
           multiline: true,
+          blurOnSubmit: true,
+          returnKeyType: 'done',
           onChangeText: inputChangeHandler.bind(this, "description"),
           value: inputValue.description,
           placeholder: "Enter description",
@@ -139,6 +143,9 @@ export default function TransactionForm({ action, onCancel, month, transactionDa
       <Input
         label="Category"
         textInputConfig={{
+          returnKeyType: 'done',
+          onSubmitEditing: () => Keyboard.dismiss(),
+          onFocus: () => onFocusLast && onFocusLast(),
           onChangeText: inputChangeHandler.bind(this, "category"),
           value: inputValue.category,
           placeholder: "Enter category (e.g., Food, Transport)",
@@ -163,7 +170,7 @@ export default function TransactionForm({ action, onCancel, month, transactionDa
           {action === 'ADD' ? 'Add' : 'Update'}
         </TextButton>
       </View>
-    </View>
+  </View>
   );
 }
 

@@ -7,10 +7,11 @@ export default function Card({ children }) {
 
 const styles = StyleSheet.create({
   inputContainer: {
-    alignItems: "center",
+  alignItems: "stretch",
     marginTop: 20,
     borderRadius: 8,
-    padding: 16,
+  paddingVertical: 12,
+  paddingHorizontal: 16,
     backgroundColor: GlobalStyles.colors.primary800,
   },
 });

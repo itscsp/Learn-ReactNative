@@ -1,16 +1,53 @@
 import axios from "axios";
+import { Platform } from "react-native";
+import { log, error as logError } from "./logger";
 
-const API_ROOT = (process.env.EXPO_PUBLIC_API_ROOT || '').replace(/['"]/g, "").replace(/\/$/, "");
+// Clean API root from env (no host rewrite)
+function cleanApiRoot(raw) {
+  return (raw || "").replace(/['"]/g, "").replace(/\/$/, "");
+}
+// Allow explicit Android override; fallback to EXPO_PUBLIC_API_ROOT as-is
+const RAW_API_ROOT = process.env.EXPO_PUBLIC_API_ROOT;
+const RAW_API_ROOT_ANDROID = process.env.EXPO_PUBLIC_API_ROOT_ANDROID;
+const RAW_SELECTED = Platform.OS === "android" ? (RAW_API_ROOT_ANDROID || RAW_API_ROOT) : RAW_API_ROOT;
+const API_ROOT = cleanApiRoot(RAW_SELECTED);
+let ORIGINAL_HOST;
+try {
+  ORIGINAL_HOST = new URL((RAW_SELECTED || '').replace(/['"]/g, "")).hostname;
+} catch {}
+let RESOLVED_HOST;
+try {
+  RESOLVED_HOST = new URL(API_ROOT).hostname;
+} catch {}
 const API_USERNAME = (process.env.EXPO_PUBLIC_API_USERNAME || '').replace(/['"]/g, "");
 const API_PASSWORD = (process.env.EXPO_PUBLIC_API_PASSWORD || '').replace(/['"]/g, "");
+
+// Shared request options: include a sane timeout to avoid long hangs
+const DEFAULT_TIMEOUT_MS = 10000; // 10s
+function withDefaults(opts = {}) {
+  const headers = { ...(opts.headers || {}) };
+  // If we rewrote the host for Android emulator, preserve original Host header for vhost routing
+  if (Platform.OS === "android" && ORIGINAL_HOST && RESOLVED_HOST && ORIGINAL_HOST !== RESOLVED_HOST) {
+    headers["Host"] = ORIGINAL_HOST;
+  }
+  return { timeout: DEFAULT_TIMEOUT_MS, ...opts, headers };
+}
 
 
 // Fetch transactions from WP API with Basic Auth
 export async function fetchWPTransactions() {
   const url = `${API_ROOT}/transactions`;
   const auth = { username: API_USERNAME, password: API_PASSWORD };
-  const response = await axios.get(url, { auth });
-  return response.data;
+  try {
+  log("GET", url);
+  const response = await axios.get(url, withDefaults({ auth }));
+    return response.data;
+  } catch (e) {
+  const status = e?.response?.status;
+  const data = e?.response?.data;
+  logError("HTTP GET failed", url, status ? { status, data } : (e?.message || e));
+    throw e;
+  }
 }
 
 // Generic GET with optional filters: { year, month }
@@ -20,8 +57,16 @@ export async function getTransactions(params = {}) {
     username: API_USERNAME,
     password: API_PASSWORD,
   };
-  const response = await axios.get(url, { auth, params });
-  return response.data;
+  try {
+  log("GET", url, params);
+  const response = await axios.get(url, withDefaults({ auth, params }));
+    return response.data;
+  } catch (e) {
+  const status = e?.response?.status;
+  const data = e?.response?.data;
+  logError("HTTP GET failed", url, params, status ? { status, data } : (e?.message || e));
+    throw e;
+  }
 }
 
 export async function createTransaction(data) {
@@ -30,11 +75,23 @@ export async function createTransaction(data) {
     username: API_USERNAME,
     password: API_PASSWORD,
   };
-  const response = await axios.post(url, data, {
-    auth,
-    headers: { 'Content-Type': 'application/json' },
-  });
-  return response.data;
+  try {
+    log("POST", url, data);
+    const response = await axios.post(
+      url,
+      data,
+      withDefaults({
+        auth,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    );
+    return response.data;
+  } catch (e) {
+  const status = e?.response?.status;
+  const resData = e?.response?.data;
+  logError("HTTP POST failed", url, status ? { status, data: resData } : (e?.message || e));
+    throw e;
+  }
 }
 
 export async function updateTransaction(id, data) {
@@ -43,11 +100,23 @@ export async function updateTransaction(id, data) {
     username: API_USERNAME,
     password: API_PASSWORD,
   };
-  const response = await axios.put(url, data, {
-    auth,
-    headers: { 'Content-Type': 'application/json' },
-  });
-  return response.data;
+  try {
+    log("PUT", url, data);
+    const response = await axios.put(
+      url,
+      data,
+      withDefaults({
+        auth,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    );
+    return response.data;
+  } catch (e) {
+  const status = e?.response?.status;
+  const resData = e?.response?.data;
+  logError("HTTP PUT failed", url, status ? { status, data: resData } : (e?.message || e));
+    throw e;
+  }
 }
 
 export async function deleteTransaction(id) {
@@ -56,7 +125,15 @@ export async function deleteTransaction(id) {
     username: API_USERNAME,
     password: API_PASSWORD,
   };
-  const response = await axios.delete(url, { auth });
-  return response.data;
+  try {
+    log("DELETE", url);
+  const response = await axios.delete(url, withDefaults({ auth }));
+    return response.data;
+  } catch (e) {
+  const status = e?.response?.status;
+  const data = e?.response?.data;
+  logError("HTTP DELETE failed", url, status ? { status, data } : (e?.message || e));
+    throw e;
+  }
 }
 

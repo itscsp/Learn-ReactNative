@@ -1,3 +1,5 @@
+import { log } from "./logger";
+
 export const formatINR = (amount) => {
   const n = typeof amount === 'string' ? Number(amount) : amount;
   const safe = Number.isFinite(n) ? n : 0;
@@ -13,7 +15,7 @@ export const getDay = (dateString) => {
     }
     return date.getDate();
   } catch (error) {
-    console.log("Date parsing error:", error);
+    log("Date parsing error:", error);
     return "";
   }
 };

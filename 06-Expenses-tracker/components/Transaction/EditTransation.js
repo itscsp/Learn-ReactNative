@@ -5,7 +5,7 @@ import Card from "../UI/Card";
 import { TransationContext } from "../../store/transaction-context";
 import TransactionForm from "./TransactionForm";
 
-export default function EditTransation({onCancel, id, month}) {
+export default function EditTransation({onCancel, id, month, onFocusLast}) {
   const transactionCtx = useContext(TransationContext);
   const txns = transactionCtx?.transactions?.[month]?.TRANSACTIONS || [];
   const data = useMemo(() => txns.find((item) => String(item.id) === String(id)), [txns, id]);
@@ -18,7 +18,7 @@ export default function EditTransation({onCancel, id, month}) {
           <Text style={styles.cardTitle}>Edit</Text>
         </View>
         <View style={styles.cardBody}>
-          <TransactionForm action='EDIT' onCancel={onCancel} month={month} transactionData={data} />
+          <TransactionForm action='EDIT' onCancel={onCancel} month={month} transactionData={data} onFocusLast={onFocusLast} />
         </View>
       </Card>
     </View>

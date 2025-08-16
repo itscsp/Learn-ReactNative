@@ -16,7 +16,7 @@ export default function RadioInput({ setType, type }) {
           <View
             style={[
               styles.radioButton,
-              type === "erxpense" && styles.radioButtonSelected,
+              type === "expense" && styles.radioButtonSelected,
             ]}
           >
             {type === "expense" && <View style={styles.radioButtonInner} />}

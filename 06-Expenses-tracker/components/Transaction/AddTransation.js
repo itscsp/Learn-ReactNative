@@ -4,7 +4,7 @@ import { GlobalStyles } from "../../constants/styles";
 import Card from "../UI/Card";
 import TransactionForm from "./TransactionForm";
 
-export default function AddTransation({onCancel, month }) {
+export default function AddTransation({onCancel, month, onFocusLast }) {
 
   return (
     <View style={styles.container}>
@@ -13,7 +13,7 @@ export default function AddTransation({onCancel, month }) {
           <Text style={styles.cardTitle}>Add</Text>
         </View>
         <View style={styles.cardBody}>
-          <TransactionForm action='ADD' onCancel={onCancel} month={month} />
+          <TransactionForm action='ADD' onCancel={onCancel} month={month} onFocusLast={onFocusLast} />
         </View>
       </Card>
     </View>

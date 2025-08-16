@@ -21,9 +21,8 @@ export default function RecentTransactions() {
 
   useFocusEffect(
     React.useCallback(() => {
-      // Fetch current month (year, month) into context; render will react to state update
       transactionCtx?.loadMonth?.(year, monthNum);
-    }, [transactionCtx, year, monthNum])
+    }, [transactionCtx?.loadMonth, year, monthNum])
   );
 
   // no direct fetch here; provider populates context

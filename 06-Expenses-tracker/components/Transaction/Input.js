@@ -22,7 +22,7 @@ export default function Input({ label, textInputConfig }) {
 
 const styles = StyleSheet.create({
   formCard: {
-    width: "280",
+    width: '100%',
     marginBottom: 10,
   },
 
