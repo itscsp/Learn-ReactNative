@@ -5,14 +5,13 @@ import RadioInput from "./RadioInput";
 import TextButton from "../UI/TextButton";
 import { GlobalStyles } from "../../constants/styles";
 import { TransationContext } from "../../store/transaction-context";
-import { storeTransaction } from "../../helper/http";
 
 export default function TransactionForm({ action, onCancel, month, transactionData }) {
   const transactionCtx = useContext(TransationContext);
   const Data = action === 'ADD' ? null : (transactionData || null);
 
   const [inputValue, setInputValue] = useState({
-    type: action === 'ADD' ? 'Expense' : (Data?.type || 'Expense'),
+    type: action === 'ADD' ? 'expense' : (Data?.type || 'expense'),
     amount: action === 'ADD' ? "" : (Data?.amount != null ? String(Data.amount) : ""),
     date: action === 'ADD' ? "" : (Data?.date || ""),
     description: action === 'ADD' ? "" : (Data?.description || ""),
@@ -82,7 +81,7 @@ export default function TransactionForm({ action, onCancel, month, transactionDa
 
     if (action === 'ADD') {
       // Use month derived from date
-      storeTransaction(formattedInput);
+  // Context will call API create and update local state
       transactionCtx.addTransaction(targetMonth, formattedInput);
     } else {
       // If month changed, move transaction to new month (delete + add)

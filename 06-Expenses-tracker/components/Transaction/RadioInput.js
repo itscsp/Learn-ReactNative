@@ -9,34 +9,34 @@ export default function RadioInput({ setType, type }) {
         <TouchableOpacity
           style={[
             styles.radioOption,
-            type === "Expense" && styles.selectedOption,
+            type === "expense" && styles.selectedOption,
           ]}
-          onPress={() => setType("Expense")}
+          onPress={() => setType("expense")}
         >
           <View
             style={[
               styles.radioButton,
-              type === "Expense" && styles.radioButtonSelected,
+              type === "erxpense" && styles.radioButtonSelected,
             ]}
           >
-            {type === "Expense" && <View style={styles.radioButtonInner} />}
+            {type === "expense" && <View style={styles.radioButtonInner} />}
           </View>
           <Text style={styles.radioText}>Expense</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[
             styles.radioOption,
-            type === "Income" && styles.selectedOption,
+            type === "income" && styles.selectedOption,
           ]}
-          onPress={() => setType("Income")}
+          onPress={() => setType("income")}
         >
           <View
             style={[
               styles.radioButton,
-              type === "Income" && styles.radioButtonSelected,
+              type === "income" && styles.radioButtonSelected,
             ]}
           >
-            {type === "Income" && <View style={styles.radioButtonInner} />}
+            {type === "income" && <View style={styles.radioButtonInner} />}
           </View>
           <Text style={styles.radioText}>Income</Text>
         </TouchableOpacity>

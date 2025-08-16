@@ -1,50 +1,43 @@
 import { FlatList, View, Text, StyleSheet } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { TransationContext } from "../store/transaction-context";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import TransactionSummary from "../components/TransactionOutput/TransactionSummary";
 import TransactionList from "../components/TransactionOutput/TransactionList";
 import TextButton from "../components/UI/TextButton";
 import { GlobalStyles } from "../constants/styles";
-import { getCurrentMonthName } from "../helper/helperFunctions";
-import { fetchTransaction } from "../helper/http";
+import { months } from "../constants/functions";
+// Data comes from context, loaded via API in the provider
 
 export default function RecentTransactions() {
     const navigation = useNavigation();
   
   const transactionCtx = useContext(TransationContext);
-  const [currentData, setCurrentData] = useState([]);
-
-
+  // Derive current month/year
+  const now = new Date();
+  const year = now.getFullYear();
+  const monthNum = now.getMonth() + 1; // 1-12
+  const monthName = months[now.getMonth()]; // ensure consistent key with context
 
   useFocusEffect(
     React.useCallback(() => {
-      const currentMonth = getCurrentMonthName(new Date());
-      if (
-        transactionCtx?.transactions &&
-        transactionCtx.transactions[currentMonth]
-      ) {
-        setCurrentData([
-          {
-            key: currentMonth,
-            summary: transactionCtx.transactions[currentMonth].SUMMARY,
-            transactions:
-              transactionCtx.transactions[currentMonth].TRANSACTIONS,
-          },
-        ]);
-      }
-    }, [transactionCtx])
+      // Fetch current month (year, month) into context; render will react to state update
+      transactionCtx?.loadMonth?.(year, monthNum);
+    }, [transactionCtx, year, monthNum])
   );
 
-  useEffect(() => {
-    async function getTransation() {
-      let data = await fetchTransaction()
-      console.log('Data', data.data)
-    }
+  // no direct fetch here; provider populates context
 
-    getTransation();
-    
-  }, [])
+  const currentMonthData = transactionCtx?.transactions?.[monthName];
+  const listData = currentMonthData
+    ? [
+        {
+          key: monthName,
+          summary: currentMonthData.SUMMARY,
+          transactions: currentMonthData.TRANSACTIONS,
+        },
+      ]
+    : [];
 
   const renderMonthItem = ({ item }) => (
     <View style={{ marginBottom: 16 }}>
@@ -55,9 +48,9 @@ export default function RecentTransactions() {
 
   return (
     <View style={styles.wrapper}>
-      {currentData.length ? (
+      {listData.length ? (
         <FlatList
-          data={currentData}
+          data={listData}
           renderItem={renderMonthItem}
           keyExtractor={(item) => item.key}
           contentContainerStyle={{ paddingBottom: 24 }}
