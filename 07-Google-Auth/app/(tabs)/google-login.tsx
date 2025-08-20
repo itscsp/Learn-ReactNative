@@ -1,32 +1,34 @@
 import * as Google from 'expo-auth-session/providers/google';
 import Constants from 'expo-constants';
+import * as WebBrowser from 'expo-web-browser';
 import React, { useEffect } from 'react';
 import { Button, Image, StyleSheet, Text, View } from 'react-native';
 
+WebBrowser.maybeCompleteAuthSession();
+
 export default function GoogleLoginScreen() {
-  const isExpoGo = Constants.appOwnership === 'expo';
-
-  // Expo Go client IDs from Expo documentation
-  const EXPO_GO_IOS_CLIENT_ID = '407408718192.apps.googleusercontent.com';
-  const EXPO_GO_ANDROID_CLIENT_ID = '407408718192.apps.googleusercontent.com';
-  const EXPO_GO_WEB_CLIENT_ID = '407408718192.apps.googleusercontent.com';
-
+  const isDevelopmentBuild = Constants.appOwnership === 'standalone' || __DEV__;
+  
   const extra = Constants.expoConfig?.extra || {};
-  const iosClientId = isExpoGo ? EXPO_GO_IOS_CLIENT_ID : extra.GOOGLE_IOS_CLIENT_ID;
-  const androidClientId = isExpoGo ? EXPO_GO_ANDROID_CLIENT_ID : extra.GOOGLE_ANDROID_CLIENT_ID;
-  const webClientId = isExpoGo ? EXPO_GO_WEB_CLIENT_ID : extra.GOOGLE_WEB_CLIENT_ID;
+  
+  // Use your own client IDs for development builds and standalone apps
+  const iosClientId = extra.GOOGLE_IOS_CLIENT_ID;
+  const androidClientId = extra.GOOGLE_ANDROID_CLIENT_ID;
+  const webClientId = extra.GOOGLE_WEB_CLIENT_ID;
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     iosClientId,
     androidClientId,
     webClientId,
+    scopes: ['profile', 'email'],
   });
 
   useEffect(() => {
     if (response?.type === 'success') {
       const { authentication } = response;
-      // You can now use authentication.accessToken
+      console.log('Google login successful:', authentication);
       // TODO: Send token to your backend API
+      // Use authentication.accessToken for API calls
     }
   }, [response]);
 

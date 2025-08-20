@@ -1,5 +1,5 @@
 import { FlatList, View, Text, StyleSheet } from "react-native";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { TransationContext } from "../store/transaction-context";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import TransactionSummary from "../components/TransactionOutput/TransactionSummary";
@@ -7,9 +7,15 @@ import TransactionList from "../components/TransactionOutput/TransactionList";
 import TextButton from "../components/UI/TextButton";
 import { GlobalStyles } from "../constants/styles";
 import { months } from "../constants/functions";
+import LoadingOverlay from "../components/UI/LoadingOverlay";
+import ErrorOverlay from "../components/UI/ErrorOverlay";
 // Data comes from context, loaded via API in the provider
 
 export default function RecentTransactions() {
+  const [isFetching, setIsFetching] = useState(true);
+  const [error, setError] = useState(false);
+
+  
     const navigation = useNavigation();
   
   const transactionCtx = useContext(TransationContext);
@@ -21,7 +27,21 @@ export default function RecentTransactions() {
 
   useFocusEffect(
     React.useCallback(() => {
-      transactionCtx?.loadMonth?.(year, monthNum);
+      let active = true;
+      (async () => {
+        setIsFetching(true);
+        try {
+          setError(false);
+          await transactionCtx?.loadMonth?.(year, monthNum);
+        } catch (e) {
+          if (active) setError(true);
+        }finally {
+          if (active) setIsFetching(false);
+        }
+      })();
+      return () => {
+        active = false;
+      };
     }, [transactionCtx?.loadMonth, year, monthNum])
   );
 
@@ -45,9 +65,28 @@ export default function RecentTransactions() {
     </View>
   );
 
+
+  if (error) {
+    return (
+      <View style={styles.wrapper}>
+        <ErrorOverlay />
+      </View>
+    );
+  }
+
+  if (isFetching) {
+    return (
+      <View style={styles.wrapper}>
+        <LoadingOverlay />
+      </View>
+    );
+  }
+
+
+
   return (
     <View style={styles.wrapper}>
-      {listData.length ? (
+      {!error && listData.length ? (
         <FlatList
           data={listData}
           renderItem={renderMonthItem}
@@ -77,7 +116,8 @@ export default function RecentTransactions() {
 
 const styles = StyleSheet.create({
   wrapper: {
-        marginHorizontal: 16,
+  flex: 1,
+  marginHorizontal: 16,
   },
 
   fallbackContainer: {

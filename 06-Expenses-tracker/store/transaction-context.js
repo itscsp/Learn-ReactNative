@@ -247,7 +247,7 @@ function TransationContextProvider({ children }) {
           return;
         }
         inFlightYearRef.current.add(selectedYear);
-        const apiList = await getTransactions({ year: Number(selectedYear) }).catch(() => undefined);
+  const apiList = await getTransactions({ year: Number(selectedYear) });
         const normalized = normalizeApiListToYearMap(apiList, selectedYear) || {};
         dispatch({ type: "SET_ALL", payload: normalized });
         lastFetchedRef.current.year[selectedYear] = Date.now();
@@ -255,6 +255,7 @@ function TransationContextProvider({ children }) {
       } catch (e) {
         log("Failed to load transactions:", e?.message || e);
         inFlightYearRef.current.delete(selectedYear);
+  // Let consumers decide how to react to initial error (no rethrow here to avoid unhandled promise)
       }
     })();
   }, [selectedYear]);
@@ -268,11 +269,10 @@ function TransationContextProvider({ children }) {
       const last = lastFetchedRef.current.month[key] || 0;
       const now = Date.now();
       if (existing.length > 0 || now - last < LOADER_TTL_MS || inFlightMonthRef.current.has(key)) {
-        return;
+        return true;
       }
       inFlightMonthRef.current.add(key);
-
-      const list = await getTransactions({ year: Number(year), month: Number(monthNum) }).catch(() => undefined);
+      const list = await getTransactions({ year: Number(year), month: Number(monthNum) });
       const normalized = normalizeApiListToYearMap(list, String(year)) || {};
       const data = normalized[monthName] || {
         SUMMARY: computeSummary(monthName, String(year), []),
@@ -281,9 +281,11 @@ function TransationContextProvider({ children }) {
       dispatch({ type: "SET_MONTH", payload: { monthName, data } });
       lastFetchedRef.current.month[key] = Date.now();
       inFlightMonthRef.current.delete(key);
+      return true;
     } catch (e) {
       log("Failed to load month:", year, monthNum, e?.message || e);
       inFlightMonthRef.current.delete(key);
+      throw e;
     }
   }, [transactionsState]);
 

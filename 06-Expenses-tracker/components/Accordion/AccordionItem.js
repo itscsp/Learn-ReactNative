@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
 
   innerSection: {
     flexDirection: "row",
-    justifyContent: "start",
+    justifyContent: "flex-start",
     alignItems: "center",
   },
 
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
   },
 
   content: {
-    flexDirection: "col",
+    flexDirection: "column",
     padding: 10,
     backgroundColor: GlobalStyles.colors.primary500,
   },

@@ -1,34 +1,58 @@
-import { View, Text, ScrollView, StyleSheet } from 'react-native'
-import React from 'react'
-import PlansList from '../components/PlansOutput/PlansList'
-import PlansSummary from '../components/PlansOutput/PlansSummary'
+import { View, Text, ScrollView, StyleSheet } from "react-native";
+import React from "react";
+import PlansList from "../components/PlansOutput/PlansList";
+import PlansSummary from "../components/PlansOutput/PlansSummary";
 
 export default function Plans() {
-  let plans = [
-    { "id":1, "title": 'testing', "amount" : `1000`, 'status':'PAID' },
-    { "id":2, "title": 'testing', "amount" : `1000`, 'status':'PAID' },
-    { "id":3, "title": 'testing', "amount" : `1000`, 'status':'PAID' },
-    { "id":4, "title": 'testing', "amount" : `1000`, 'status':'PAID' }
+  let plans = {
+    2025: {
+      "09": [
+        { id: 1, title: "testing", amount: `1000`, status: "PAID" },
+        { id: 2, title: "testing", amount: `1000`, status: "PAID" },
+        { id: 3, title: "testing", amount: `1000`, status: "PAID" },
+        { id: 4, title: "testing", amount: `1000`, status: "PAID" },
+      ],
+      "08": [
+        { id: 1, title: "testing", amount: `1000`, status: "PAID" },
+        { id: 2, title: "testing", amount: `1000`, status: "PAID" },
+        { id: 3, title: "testing", amount: `1000`, status: "PAID" },
+        { id: 4, title: "testing", amount: `1000`, status: "PAID" },
+      ],
+      "07": [
+        { id: 1, title: "testing", amount: `1000`, status: "PAID" },
+        { id: 2, title: "testing", amount: `1000`, status: "PAID" },
+        { id: 3, title: "testing", amount: `1000`, status: "PAID" },
+        { id: 4, title: "testing", amount: `1000`, status: "PAID" },
+      ],
+      "06": [
+        { id: 1, title: "testing", amount: `1000`, status: "PAID" },
+        { id: 2, title: "testing", amount: `1000`, status: "PAID" },
+        { id: 3, title: "testing", amount: `1000`, status: "PAID" },
+        { id: 4, title: "testing", amount: `1000`, status: "PAID" },
+      ],
+    },
+  };
 
-  ]
+
+    console.log(plans[2025]);
+
   return (
     <ScrollView>
       <View style={styles.wrapper}>
-  <PlansList 
-          plans={plans} 
-          onDelete={(id)=>{}}
-          onAddPlan={()=>{}}
-          onReport={()=>{}}
-          onPlan={()=>{}}
+        <PlansList
+          plans={plans}
+          onDelete={(id) => {}}
+          onAddPlan={() => {}}
+          onReport={() => {}}
+          onPlan={() => {}}
         />
-  <PlansSummary plans={plans} />
       </View>
     </ScrollView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   wrapper: {
-    marginHorizontal: 16,
-  }
-})
+    // marginHorizontal: 16,
+  },
+});

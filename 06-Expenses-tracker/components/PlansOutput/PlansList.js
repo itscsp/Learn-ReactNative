@@ -1,48 +1,37 @@
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
+import React from "react";
+import { Ionicons } from "@expo/vector-icons";
+import { formatINR, getCurrentMonthName } from "../../helper/helperFunctions";
+import PlanAccordionItem from "../Accordion/PlanAccordionItem";
 
-import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
-import React from 'react';
-import { Ionicons } from '@expo/vector-icons';
-import { formatINR, getCurrentMonthName } from '../../helper/helperFunctions';
-
-export default function PlansList({ plans, onDelete = () => {}, onAddPlan = () => {}, onReport = () => {}, onPlan = () => {} }) {
-
-  const headerMonth = `${getCurrentMonthName(new Date())} ${new Date().getFullYear()}`;
+export default function PlansList({
+  plans,
+  onDelete = () => {},
+  onAddPlan = () => {},
+  onReport = () => {},
+  onPlan = () => {},
+}) {
+  const headerMonth = `${getCurrentMonthName(
+    new Date()
+  )} ${new Date().getFullYear()}`;
 
   const renderPlanItem = ({ item }) => (
-    <View style={styles.card}>
-  <Text style={styles.title}>{item.title}</Text>
-  <Text style={styles.amount}>{formatINR(item.amount)}</Text>
-      <View style={styles.row}>
-        <Text style={[styles.status, item.status === 'PAID' ? styles.paid : styles.pending]}>
-          {item.status}
-        </Text>
-        <TouchableOpacity onPress={() => onDelete(item.id)}>
-          <Ionicons name="trash" size={28} color="#ff3333" />
-        </TouchableOpacity>
-      </View>
-    </View>
+    <PlanAccordionItem />
   );
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>{headerMonth}</Text>
-      <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.button} onPress={onPlan}>
-          <Text style={styles.buttonText}>PLAN</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={onReport}>
-          <Text style={styles.buttonText}>REPORT</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={onAddPlan}>
-          <Text style={styles.buttonText}>ADD PLAN</Text>
-        </TouchableOpacity>
-      </View>
-     
-      <Text style={styles.subtitle}>Plan Your Month</Text>
       <FlatList
         data={plans}
         renderItem={renderPlanItem}
-        keyExtractor={item => item.id}
+        keyExtractor={(item) => item.id}
         contentContainerStyle={{ paddingBottom: 24 }}
       />
     </View>
@@ -55,73 +44,50 @@ const styles = StyleSheet.create({
     paddingTop: 16,
   },
   header: {
-    color: 'white',
+    color: "black",
     fontSize: 24,
-    fontWeight: 'bold',
-    marginLeft: 16,
+    fontWeight: "bold",
     marginBottom: 4,
   },
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    marginLeft: 16,
-    marginBottom: 8,
-    gap: 12,
-  },
-  button: {
-    backgroundColor: '#2986cc',
-    borderRadius: 6,
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-    marginRight: 8,
-  },
-  buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    letterSpacing: 2,
-    fontSize: 16,
-  },
+
+
   subtitle: {
-    color: 'white',
+    color: "black",
     fontSize: 16,
-    marginLeft: 16,
     marginBottom: 12,
   },
   card: {
-    backgroundColor: '#111',
+    backgroundColor: "#111",
     borderRadius: 8,
-    marginHorizontal: 8,
     marginBottom: 12,
     padding: 16,
     borderWidth: 2,
-    borderColor: '#2986cc',
   },
   title: {
-    color: 'white',
+    color: "white",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 4,
   },
   amount: {
-    color: 'white',
+    color: "white",
     fontSize: 18,
     marginBottom: 8,
   },
   row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   status: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     letterSpacing: 2,
   },
   paid: {
-    color: 'green',
+    color: "green",
   },
   pending: {
-    color: 'red',
+    color: "red",
   },
 });

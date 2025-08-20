@@ -81,7 +81,7 @@ function TransactionOverview() {
           ),
         })}
       />
-      <BottomTabs.Screen
+      {/* <BottomTabs.Screen
         name="Plans"
         component={Plans}
         options={({ navigation }) => ({
@@ -104,7 +104,7 @@ function TransactionOverview() {
             <Ionicons name="book-outline" size={size} color={color} />
           ),
         })}
-      />
+      /> */}
     </BottomTabs.Navigator>
   );
 }
