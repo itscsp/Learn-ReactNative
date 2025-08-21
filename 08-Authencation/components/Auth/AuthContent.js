@@ -6,7 +6,7 @@ import AuthForm from './AuthForm';
 import { Colors } from '../../constants/styles';
 import { useNavigation } from '@react-navigation/native';
 
-function AuthContent({ isLogin, onAuthenticate }) {
+function AuthContent({ isLogin, onAuthenticate, isOtp }) {
 
   const navigation = useNavigation();
 
@@ -15,6 +15,7 @@ function AuthContent({ isLogin, onAuthenticate }) {
     password: false,
     confirmEmail: false,
     confirmPassword: false,
+    otp: false,
   });
 
   function switchAuthModeHandler() {
@@ -26,6 +27,27 @@ function AuthContent({ isLogin, onAuthenticate }) {
   }
 
   function submitHandler(credentials) {
+    // Handle OTP submission
+    if (isOtp) {
+      let { email, otp } = credentials;
+      
+      otp = otp?.trim();
+      const otpIsValid = otp && otp.length >= 4; // Assuming OTP is at least 4 digits
+      
+      if (!otpIsValid) {
+        Alert.alert('Invalid input', 'Please enter a valid OTP.');
+        setCredentialsInvalid({
+          ...credentialsInvalid,
+          otp: !otpIsValid,
+        });
+        return;
+      }
+      
+      onAuthenticate({ email, otp });
+      return;
+    }
+
+    // Handle regular login/signup submission
     let { email, confirmEmail, password, confirmPassword } = credentials;
 
     email = email.trim();
@@ -47,6 +69,7 @@ function AuthContent({ isLogin, onAuthenticate }) {
         confirmEmail: !emailIsValid || !emailsAreEqual,
         password: !passwordIsValid,
         confirmPassword: !passwordIsValid || !passwordsAreEqual,
+        otp: false,
       });
       return;
     }
@@ -59,12 +82,15 @@ function AuthContent({ isLogin, onAuthenticate }) {
         isLogin={isLogin}
         onSubmit={submitHandler}
         credentialsInvalid={credentialsInvalid}
+        isOtp={isOtp}
       />
-      <View style={styles.buttons}>
-        <FlatButton onPress={switchAuthModeHandler}>
-          {isLogin ? 'Create a new user' : 'Log in instead'}
-        </FlatButton>
-      </View>
+      {!isOtp && (
+        <View style={styles.buttons}>
+          <FlatButton onPress={switchAuthModeHandler}>
+            {isLogin ? 'Create a new user' : 'Log in instead'}
+          </FlatButton>
+        </View>
+      )}
     </View>
   );
 }
