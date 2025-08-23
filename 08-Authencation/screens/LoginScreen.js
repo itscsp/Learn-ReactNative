@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import AuthContent from "../components/Auth/AuthContent";
 import { login } from "../util/auth";
 import LoadingOverlay from "../components/ui/LoadingOverlay";
+import ErrorDisplay from "../components/ui/ErrorDisplay";
 import { Alert } from "react-native";
 import { AuthContext } from "../store/auth-context";
 
@@ -11,6 +12,7 @@ function LoginScreen() {
 
   async function loginHandler({email, password}) {
     setIsAuthenticating(true);
+    authCtx.clearError(); // Clear any previous errors
     console.log("Started logging..");
     
     try {
@@ -18,7 +20,8 @@ function LoginScreen() {
       authCtx.authenticate(userData);
       setIsAuthenticating(false);
     } catch (error) {
-      Alert.alert("Authentication failed!", "Please check your credentials");
+      console.error("Login failed:", error);
+      authCtx.handleError(error);
       setIsAuthenticating(false);
     }
   }

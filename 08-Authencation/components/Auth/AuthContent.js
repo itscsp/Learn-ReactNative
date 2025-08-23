@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 
 import FlatButton from '../ui/FlatButton';
+import ErrorDisplay from '../ui/ErrorDisplay';
 import AuthForm from './AuthForm';
 import { Colors } from '../../constants/styles';
 import { useNavigation } from '@react-navigation/native';
@@ -78,6 +79,7 @@ function AuthContent({ isLogin, onAuthenticate, isOtp }) {
 
   return (
     <View style={styles.authContent}>
+      <ErrorDisplay />
       <AuthForm
         isLogin={isLogin}
         onSubmit={submitHandler}

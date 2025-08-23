@@ -12,6 +12,10 @@ export const AuthContext = createContext({
     userId: "",
     displayName: "",
   },
+  profile: null,
+  setProfile: () => {},
+  error: null,
+  clearError: () => {},
   authenticate: () => {},
   logout: () => {},
 });
@@ -26,21 +30,43 @@ function AuthContextProvider({ children }) {
     userId: "",
     displayName: "",
   });
+  const [profile, setProfile] = useState(null);
+  const [error, setError] = useState(null);
+
+  function clearError() {
+    setError(null);
+  }
+
+  function handleError(error) {
+    console.error('Auth error:', error);
+    
+    // Extract meaningful error message
+    let errorMessage = "An unexpected error occurred";
+    
+    if (error.response?.data?.message) {
+      errorMessage = error.response.data.message;
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+    
+    setError(errorMessage);
+  }
 
   function authenticate(data) {
     console.log('authenticate', data)
-    // Extract token from the response data
+    // Extract token from the response data - handle both login and registration responses
     const token = data.data?.token || data.token
     setAuthToken(token);
     
-    // Set user data from the response
+    // Set user data from the response - handle both formats
+    const userData = data.data?.user || data.data || data;
     setUserData({
-      firstName: data.data?.display_name?.split(' ')[0] || data.data?.username || "",
-      secondName: data.data?.display_name?.split(' ')[1] || "",
-      email: data.data?.email || "",
-      username: data.data?.username || "",
-      userId: data.data?.user_id?.toString() || "",
-      displayName: data.data?.display_name || "",
+      firstName: userData.first_name || userData.display_name?.split(' ')[0] || userData.username || "",
+      secondName: userData.last_name || userData.display_name?.split(' ')[1] || "",
+      email: userData.email || "",
+      username: userData.username || "",
+      userId: userData.user_id?.toString() || userData.ID?.toString() || "",
+      displayName: userData.display_name || userData.username || "",
     });
   }
 
@@ -65,6 +91,7 @@ function AuthContextProvider({ children }) {
         userId: "",
         displayName: "",
       });
+      setProfile(null);
     }
   }
 
@@ -72,6 +99,11 @@ function AuthContextProvider({ children }) {
     token: authToken,
     isAuthenticated: !!authToken,
     userData: userData,
+    profile,
+    setProfile,
+    error,
+    clearError,
+    handleError,
     authenticate: authenticate,
     logout: logout,
   };
