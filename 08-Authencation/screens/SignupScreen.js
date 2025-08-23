@@ -3,13 +3,13 @@ import { Alert, StyleSheet, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { startRegistration, verifyRegistrationOtp, completeRegistration, resendOtp } from "../util/auth";
 import LoadingOverlay from "../components/ui/LoadingOverlay";
-import ErrorDisplay from "../components/ui/ErrorDisplay";
 import { AuthContext } from "../store/auth-context";
 import RegistrationStep1 from "../components/Auth/RegistrationStep1";
 import RegistrationStep2 from "../components/Auth/RegistrationStep2";
 import RegistrationStep3 from "../components/Auth/RegistrationStep3";
 import FlatButton from "../components/ui/FlatButton";
 import { Colors } from "../constants/styles";
+import ErrorDisplay from "../components/ui/ErrorDisplay";
 
 function SignupScreen() {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
@@ -261,8 +261,8 @@ function SignupScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.authContent}>
-        <ErrorDisplay />
         {renderCurrentStep()}
+        <ErrorDisplay />
         <View style={styles.buttons}>
           <FlatButton onPress={switchToLogin}>
             Already have an account? Log in instead

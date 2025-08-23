@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 
 import FlatButton from '../ui/FlatButton';
-import ErrorDisplay from '../ui/ErrorDisplay';
 import AuthForm from './AuthForm';
 import { Colors } from '../../constants/styles';
 import { useNavigation } from '@react-navigation/native';
@@ -78,8 +77,7 @@ function AuthContent({ isLogin, onAuthenticate, isOtp }) {
   }
 
   return (
-    <View style={styles.authContent}>
-      <ErrorDisplay />
+    <View style={styles.form}>
       <AuthForm
         isLogin={isLogin}
         onSubmit={submitHandler}
@@ -100,19 +98,10 @@ function AuthContent({ isLogin, onAuthenticate, isOtp }) {
 export default AuthContent;
 
 const styles = StyleSheet.create({
-  authContent: {
-    marginTop: 64,
-    marginHorizontal: 32,
-    padding: 16,
-    borderRadius: 8,
-    backgroundColor: Colors.primary800,
-    elevation: 2,
-    shadowColor: 'black',
-    shadowOffset: { width: 1, height: 1 },
-    shadowOpacity: 0.35,
-    shadowRadius: 4,
+  form: {
+    // flex: 1,
   },
   buttons: {
-    marginTop: 8,
+    marginTop: 16,
   },
 });

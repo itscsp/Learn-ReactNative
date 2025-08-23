@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   errorContainer: {
     backgroundColor: '#ff4444',
     padding: 12,
-    marginBottom: 16,
+    marginTop: 16,
     borderRadius: 8,
     flexDirection: 'row',
     alignItems: 'center',

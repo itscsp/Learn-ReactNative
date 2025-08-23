@@ -59,18 +59,15 @@ function AuthForm({ isLogin, onSubmit, credentialsInvalid, isOtp }) {
   if (isOtp) {
     return (
       <View style={styles.form}>
-        <View>
-          <Input
-            label="Enter OTP"
-            onUpdateValue={updateInputValueHandler.bind(this, "otp")}
-            value={enteredOtp}
-            keyboardType="numeric"
-            isInvalid={isOtpInvalid}
-          />
-
-          <View style={styles.buttons}>
-            <Button onPress={otpSubmitHandler}>Verify OTP</Button>
-          </View>
+        <Input
+          label="Enter OTP"
+          onUpdateValue={updateInputValueHandler.bind(this, "otp")}
+          value={enteredOtp}
+          keyboardType="numeric"
+          isInvalid={isOtpInvalid}
+        />
+        <View style={styles.buttons}>
+          <Button onPress={otpSubmitHandler}>Verify OTP</Button>
         </View>
       </View>
     );
@@ -78,47 +75,45 @@ function AuthForm({ isLogin, onSubmit, credentialsInvalid, isOtp }) {
 
   return (
     <View style={styles.form}>
-      <View>
+      <Input
+        label="Email Address"
+        onUpdateValue={updateInputValueHandler.bind(this, "email")}
+        value={enteredEmail}
+        keyboardType="email-address"
+        isInvalid={emailIsInvalid}
+      />
+      {!isLogin && (
         <Input
-          label="Email Address"
-          onUpdateValue={updateInputValueHandler.bind(this, "email")}
-          value={enteredEmail}
+          label="Confirm Email Address"
+          onUpdateValue={updateInputValueHandler.bind(this, "confirmEmail")}
+          value={enteredConfirmEmail}
           keyboardType="email-address"
-          isInvalid={emailIsInvalid}
+          isInvalid={emailsDontMatch}
         />
-        {!isLogin && (
-          <Input
-            label="Confirm Email Address"
-            onUpdateValue={updateInputValueHandler.bind(this, "confirmEmail")}
-            value={enteredConfirmEmail}
-            keyboardType="email-address"
-            isInvalid={emailsDontMatch}
-          />
-        )}
+      )}
+      <Input
+        label="Password"
+        onUpdateValue={updateInputValueHandler.bind(this, "password")}
+        secure
+        value={enteredPassword}
+        isInvalid={passwordIsInvalid}
+      />
+      {!isLogin && (
         <Input
-          label="Password"
-          onUpdateValue={updateInputValueHandler.bind(this, "password")}
+          label="Confirm Password"
+          onUpdateValue={updateInputValueHandler.bind(
+            this,
+            "confirmPassword"
+          )}
           secure
-          value={enteredPassword}
-          isInvalid={passwordIsInvalid}
+          value={enteredConfirmPassword}
+          isInvalid={passwordsDontMatch}
         />
-        {!isLogin && (
-          <Input
-            label="Confirm Password"
-            onUpdateValue={updateInputValueHandler.bind(
-              this,
-              "confirmPassword"
-            )}
-            secure
-            value={enteredConfirmPassword}
-            isInvalid={passwordsDontMatch}
-          />
-        )}
-        <View style={styles.buttons}>
-          <Button onPress={submitHandler}>
-            {isLogin ? "Log In" : "Sign Up"}
-          </Button>
-        </View>
+      )}
+      <View style={styles.buttons}>
+        <Button onPress={submitHandler}>
+          {isLogin ? "Log In" : "Sign Up"}
+        </Button>
       </View>
     </View>
   );
@@ -127,6 +122,9 @@ function AuthForm({ isLogin, onSubmit, credentialsInvalid, isOtp }) {
 export default AuthForm;
 
 const styles = StyleSheet.create({
+  form: {
+    // Remove flex: 1 to let the form size naturally
+  },
   buttons: {
     marginTop: 12,
   },

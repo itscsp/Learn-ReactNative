@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useCallback } from "react";
 import { logoutUser } from "../util/auth";
 
 export const AuthContext = createContext({
@@ -33,11 +33,11 @@ function AuthContextProvider({ children }) {
   const [profile, setProfile] = useState(null);
   const [error, setError] = useState(null);
 
-  function clearError() {
+  const clearError = useCallback(() => {
     setError(null);
-  }
+  }, []);
 
-  function handleError(error) {
+  const handleError = useCallback((error) => {
     console.error('Auth error:', error);
     
     // Extract meaningful error message
@@ -50,9 +50,9 @@ function AuthContextProvider({ children }) {
     }
     
     setError(errorMessage);
-  }
+  }, []);
 
-  function authenticate(data) {
+  const authenticate = useCallback((data) => {
     console.log('authenticate', data)
     // Extract token from the response data - handle both login and registration responses
     const token = data.data?.token || data.token
@@ -68,9 +68,9 @@ function AuthContextProvider({ children }) {
       userId: userData.user_id?.toString() || userData.ID?.toString() || "",
       displayName: userData.display_name || userData.username || "",
     });
-  }
+  }, []);
 
-  async function logout() {
+  const logout = useCallback(async () => {
     try {
       // Call logout API if token exists
       if (authToken) {
@@ -93,7 +93,7 @@ function AuthContextProvider({ children }) {
       });
       setProfile(null);
     }
-  }
+  }, [authToken]);
 
   const value = {
     token: authToken,
