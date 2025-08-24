@@ -7,6 +7,8 @@ import LoginScreen from "./screens/LoginScreen";
 import SignupScreen from "./screens/SignupScreen";
 import WelcomeScreen from "./screens/WelcomeScreen";
 import ProfileScreen from "./screens/ProfileScreen";
+import LoadingOverlay from "./components/ui/LoadingOverlay";
+import SessionManager from "./components/SessionManager";
 import { Colors } from "./constants/styles";
 import AuthContextProvider, { AuthContext } from "./store/auth-context";
 
@@ -45,6 +47,11 @@ function AuthenticatedStack() {
 function Navigation() {
   const authCtx = useContext(AuthContext);
 
+  // Show loading screen while checking stored authentication
+  if (authCtx.isLoading) {
+    return <LoadingOverlay message="Loading..." />;
+  }
+
   return (
     <NavigationContainer>
       {authCtx.isAuthenticated ? <AuthenticatedStack /> : <AuthStack />}
@@ -54,9 +61,13 @@ function Navigation() {
 
 export default function App() {
   return (
-    <AuthContextProvider>
+    <>
       <StatusBar style="light" />
-      <Navigation />
-    </AuthContextProvider>
+      <AuthContextProvider>
+        <SessionManager>
+          <Navigation />
+        </SessionManager>
+      </AuthContextProvider>
+    </>
   );
 }

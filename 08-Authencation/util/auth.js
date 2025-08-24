@@ -1,5 +1,11 @@
+import axios from "axios";
+import Constants from 'expo-constants';
+
+// Get the API root from environment variables
+const API_ROOT = Constants.expoConfig?.extra?.EXPO_API_ROOT || 'http://localhost.local/wp-json';
+
 export async function getProfile(token) {
-  const url = `http://blogchethanspoojarycom.local/wp-json/wp-auth/v1/profile`;
+  const url = `${API_ROOT}/wp-auth/v1/profile`;
   try {
     const response = await axios.get(url, {
       headers: {
@@ -18,7 +24,7 @@ export async function getProfile(token) {
 // 3-Step Registration Process
 
 export async function startRegistration(email, firstName, lastName = '') {
-  const url = `http://blogchethanspoojarycom.local/wp-json/wp-auth/v1/register/start`;
+  const url = `${API_ROOT}/wp-auth/v1/register/start`;
   try {
     const response = await axios.post(url, {
       email,
@@ -33,7 +39,7 @@ export async function startRegistration(email, firstName, lastName = '') {
 }
 
 export async function verifyRegistrationOtp(sessionToken, otp) {
-  const url = `http://blogchethanspoojarycom.local/wp-json/wp-auth/v1/register/verify-otp`;
+  const url = `${API_ROOT}/wp-auth/v1/register/verify-otp`;
   try {
     const response = await axios.post(url, {
       session_token: sessionToken,
@@ -48,7 +54,7 @@ export async function verifyRegistrationOtp(sessionToken, otp) {
 }
 
 export async function completeRegistration(sessionToken, username, password) {
-  const url = `http://blogchethanspoojarycom.local/wp-json/wp-auth/v1/register/complete`;
+  const url = `${API_ROOT}/wp-auth/v1/register/complete`;
   try {
     const response = await axios.post(url, {
       session_token: sessionToken,
@@ -64,7 +70,7 @@ export async function completeRegistration(sessionToken, username, password) {
 }
 
 export async function getRegistrationStatus(sessionToken) {
-  const url = `http://blogchethanspoojarycom.local/wp-json/wp-auth/v1/register/status?session_token=${sessionToken}`;
+  const url = `${API_ROOT}/wp-auth/v1/register/status?session_token=${sessionToken}`;
   try {
     const response = await axios.get(url);
     console.log('registration status response: ', response.data);
@@ -76,7 +82,7 @@ export async function getRegistrationStatus(sessionToken) {
 }
 
 export async function resendOtp(email) {
-  const url = `http://blogchethanspoojarycom.local/wp-json/wp-auth/v1/resend-otp`;
+  const url = `${API_ROOT}/wp-auth/v1/resend-otp`;
   try {
     const response = await axios.post(url, {
       email,
@@ -88,10 +94,9 @@ export async function resendOtp(email) {
     throw error;
   }
 }
-import axios from "axios";
 
 async function authenticate(mode, email, password) {
-  const url = `http://blogchethanspoojarycom.local/wp-json/wp-auth/v1/${mode}`;
+  const url = `${API_ROOT}/wp-auth/v1/${mode}`;
 
   try {
     const response = await axios.post(url, {
@@ -118,7 +123,7 @@ export function login(email, password) {
 }
 
 export async function verifyOtp(email, otp) {
-  const url = `http://blogchethanspoojarycom.local/wp-json/wp-auth/v1/verify-otp`;
+  const url = `${API_ROOT}/wp-auth/v1/verify-otp`;
 
   try {
     const response = await axios.post(url, {
@@ -135,7 +140,7 @@ export async function verifyOtp(email, otp) {
 }
 
 export async function logoutUser(token) {
-  const url = `http://blogchethanspoojarycom.local/wp-json/wp-auth/v1/logout`;
+  const url = `${API_ROOT}/wp-auth/v1/logout`;
 
   try {
     const response = await axios.post(url, {}, {
@@ -149,6 +154,38 @@ export async function logoutUser(token) {
     return response.data;
   } catch (error) {
     console.error('logout error:', error.response?.data || error.message);
+    throw error;
+  }
+}
+
+// Password Reset Functions
+
+export async function requestPasswordReset(email) {
+  const url = `${API_ROOT}/wp-auth/v1/password-reset-request`;
+  try {
+    const response = await axios.post(url, {
+      email,
+    });
+    console.log('password reset request response: ', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('password reset request error:', error.response?.data || error.message);
+    throw error;
+  }
+}
+
+export async function resetPassword(email, otp, newPassword) {
+  const url = `${API_ROOT}/wp-auth/v1/password-reset`;
+  try {
+    const response = await axios.post(url, {
+      email,
+      otp,
+      new_password: newPassword,
+    });
+    console.log('password reset response: ', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('password reset error:', error.response?.data || error.message);
     throw error;
   }
 }
