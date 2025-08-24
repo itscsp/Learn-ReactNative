@@ -6,7 +6,7 @@ import Input from "./Input";
 
 function RegistrationStep2({ onSubmit, onResendOtp, credentialsInvalid, email, resendCount = 0, maxResends = 3 }) {
   const [enteredOtp, setEnteredOtp] = useState("");
-  const [countdown, setCountdown] = useState(60); // 5 minutes in seconds
+  const [countdown, setCountdown] = useState(300); // 5 minutes in seconds
   const [canResend, setCanResend] = useState(false);
   const [isResending, setIsResending] = useState(false);
 
@@ -124,7 +124,6 @@ function RegistrationStep2({ onSubmit, onResendOtp, credentialsInvalid, email, r
               <TouchableOpacity 
                 onPress={handleResendOtp}
                 disabled={isResending || remainingResends <= 0}
-                activeOpacity={0.7}
                 style={[
                   styles.resendButton,
                   (isResending || remainingResends <= 0) && styles.disabledButton
