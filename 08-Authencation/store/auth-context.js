@@ -103,6 +103,12 @@ function AuthContextProvider({ children }) {
     checkStoredToken();
   }, [checkStoredToken]);
 
+  // Debug effect to track authToken changes
+  useEffect(() => {
+    console.log('🔥 authToken state changed:', authToken ? `Token exists (${authToken.substring(0, 20)}...)` : 'No token');
+    console.log('🔥 isAuthenticated will be:', !!authToken);
+  }, [authToken]);
+
   const clearError = useCallback(() => {
     setError(null);
   }, []);
@@ -121,13 +127,48 @@ function AuthContextProvider({ children }) {
   }, []);
 
   const authenticate = useCallback(async (data) => {
-    console.log('authenticate', data)
-    // Extract token from the response data - handle both login and registration responses
-    const token = data.data?.token || data.token
-    setAuthToken(token);
+    console.log('authenticate called with data:', data);
+    console.log('authenticate data structure:', JSON.stringify(data, null, 2));
     
-    // Set user data from the response - handle both formats
-    const userData = data.data?.user || data.data || data;
+    // Extract token from the response data - handle registration response structure
+    let token;
+    if (data.data?.token) {
+      token = data.data.token; // Registration response: response.data.token
+    } else if (data.token) {
+      token = data.token; // Direct token
+    } else if (data.data?.data?.token) {
+      token = data.data.data.token; // Nested structure
+    }
+    
+    console.log('extracted token:', token);
+    
+    if (!token) {
+      console.error('No token found in authentication data');
+      console.error('Available keys in data:', Object.keys(data));
+      if (data.data) {
+        console.error('Available keys in data.data:', Object.keys(data.data));
+      }
+      throw new Error('No authentication token received');
+    }
+    
+    console.log('🔥 Setting auth token:', token.substring(0, 20) + '...');
+    setAuthToken(token);
+    console.log('🔥 Auth token set, authToken state should update');
+    
+    // Extract user data - handle registration response structure
+    let userData;
+    if (data.data?.user) {
+      userData = data.data.user; // Registration response: response.data.user
+    } else if (data.user) {
+      userData = data.user; // Direct user object
+    } else if (data.data) {
+      userData = data.data; // Fallback to data object
+    } else {
+      userData = data; // Last resort
+    }
+    
+    console.log('extracted userData:', userData);
+    
     const processedUserData = {
       firstName: userData.first_name || userData.display_name?.split(' ')[0] || userData.username || "",
       secondName: userData.last_name || userData.display_name?.split(' ')[1] || "",
@@ -137,16 +178,29 @@ function AuthContextProvider({ children }) {
       displayName: userData.display_name || userData.username || "",
     };
     
+    console.log('processed user data:', processedUserData);
     setUserData(processedUserData);
     
-    // Calculate token expiry (default to 7 days if not provided)
-    const expiresIn = data.data?.expires_in || data.expires_in || (7 * 24 * 60 * 60); // 7 days in seconds
+    // Calculate token expiry - handle registration response structure
+    let expiresIn;
+    if (data.data?.token_expires) {
+      // Registration response has token_expires timestamp
+      const expiresTimestamp = data.data.token_expires;
+      const currentTime = Math.floor(Date.now() / 1000);
+      expiresIn = expiresTimestamp - currentTime;
+    } else {
+      // Default to data.expires_in or 7 days
+      expiresIn = data.data?.expires_in || data.expires_in || (7 * 24 * 60 * 60);
+    }
+    
     const expiryTime = new Date().getTime() + (expiresIn * 1000);
+    console.log('token expires in:', expiresIn, 'seconds, expiry time:', new Date(expiryTime));
     
     // Store session data
     await storeAuthData(token, processedUserData, expiryTime);
     
-    console.log('Session authenticated and stored');
+    console.log('Session authenticated and stored successfully');
+    console.log('isAuthenticated should now be:', !!token);
   }, [storeAuthData]);
 
   const logout = useCallback(async () => {

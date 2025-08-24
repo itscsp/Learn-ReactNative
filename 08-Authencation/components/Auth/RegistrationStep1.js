@@ -1,18 +1,57 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { StyleSheet, View, Text } from "react-native";
 import Button from "../ui/Button";
 import Input from "./Input";
+import { checkEmailAvailability } from "../../util/auth";
 
 function RegistrationStep1({ onSubmit, credentialsInvalid }) {
   const [enteredEmail, setEnteredEmail] = useState("");
   const [enteredFirstName, setEnteredFirstName] = useState("");
   const [enteredLastName, setEnteredLastName] = useState("");
+  const [emailStatus, setEmailStatus] = useState(null); // null, 'checking', 'available', 'taken'
+  const [emailCheckTimeout, setEmailCheckTimeout] = useState(null);
 
   const {
     email: emailIsInvalid,
     firstName: firstNameIsInvalid,
     lastName: lastNameIsInvalid,
   } = credentialsInvalid;
+
+  // Check email availability with debounce
+  useEffect(() => {
+    if (enteredEmail.trim().includes('@')) {
+      // Clear previous timeout
+      if (emailCheckTimeout) {
+        clearTimeout(emailCheckTimeout);
+      }
+
+      // Set new timeout for checking email
+      const timeout = setTimeout(async () => {
+        setEmailStatus('checking');
+        try {
+          const result = await checkEmailAvailability(enteredEmail.trim());
+          setEmailStatus(result.available ? 'available' : 'taken');
+        } catch (error) {
+          console.error('Email check failed:', error);
+          setEmailStatus(null);
+        }
+      }, 500); // 500ms debounce
+
+      setEmailCheckTimeout(timeout);
+    } else {
+      setEmailStatus(null);
+      if (emailCheckTimeout) {
+        clearTimeout(emailCheckTimeout);
+      }
+    }
+
+    // Cleanup timeout on unmount
+    return () => {
+      if (emailCheckTimeout) {
+        clearTimeout(emailCheckTimeout);
+      }
+    };
+  }, [enteredEmail]);
 
   function updateInputValueHandler(inputType, enteredValue) {
     switch (inputType) {
@@ -34,6 +73,32 @@ function RegistrationStep1({ onSubmit, credentialsInvalid }) {
       firstName: enteredFirstName,
       lastName: enteredLastName,
     });
+  }
+
+  function getEmailStatusText() {
+    switch (emailStatus) {
+      case 'checking':
+        return '⏳ Checking availability...';
+      case 'available':
+        return '✅ Email is available';
+      case 'taken':
+        return '❌ Email is already registered';
+      default:
+        return '';
+    }
+  }
+
+  function getEmailStatusStyle() {
+    switch (emailStatus) {
+      case 'checking':
+        return styles.statusChecking;
+      case 'available':
+        return styles.statusAvailable;
+      case 'taken':
+        return styles.statusTaken;
+      default:
+        return {};
+    }
   }
 
   return (
@@ -59,11 +124,21 @@ function RegistrationStep1({ onSubmit, credentialsInvalid }) {
           onUpdateValue={updateInputValueHandler.bind(this, "email")}
           value={enteredEmail}
           keyboardType="email-address"
-          isInvalid={emailIsInvalid}
+          isInvalid={emailIsInvalid || emailStatus === 'taken'}
         />
+        {emailStatus && enteredEmail.trim().includes('@') && (
+          <Text style={[styles.emailStatus, getEmailStatusStyle()]}>
+            {getEmailStatusText()}
+          </Text>
+        )}
 
         <View style={styles.buttons}>
-          <Button onPress={submitHandler}>Continue</Button>
+          <Button 
+            onPress={submitHandler}
+            disabled={emailStatus === 'checking' || emailStatus === 'taken'}
+          >
+            Continue
+          </Button>
         </View>
       </View>
     </View>

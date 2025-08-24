@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { startRegistration, verifyRegistrationOtp, completeRegistration, resendOtp } from "../util/auth";
+import { startRegistration, verifyRegistrationOtp, completeRegistration, resendOtp, login } from "../util/auth";
 import LoadingOverlay from "../components/ui/LoadingOverlay";
 import { AuthContext } from "../store/auth-context";
 import RegistrationStep1 from "../components/Auth/RegistrationStep1";
@@ -16,6 +16,7 @@ function SignupScreen() {
   const [currentStep, setCurrentStep] = useState(1);
   const [sessionToken, setSessionToken] = useState("");
   const [userEmail, setUserEmail] = useState("");
+  const [resendCount, setResendCount] = useState(0);
   const [credentialsInvalid, setCredentialsInvalid] = useState({
     email: false,
     firstName: false,
@@ -175,17 +176,61 @@ function SignupScreen() {
     try {
       const response = await completeRegistration(sessionToken, username.trim(), password);
       console.log("Step 3 response:", response);
+      console.log("Step 3 response structure:", JSON.stringify(response, null, 2));
       
-      setIsAuthenticating(false);
-      Alert.alert("Success", "Registration completed successfully! You are now logged in.", [
-        {
-          text: "OK",
-          onPress: () => {
-            // Auto-login with the received tokens
-            authCtx.authenticate(response);
-          }
+      // Check if response contains authentication data
+      if (response.success && (response.data?.token || response.token)) {
+        console.log("✅ Response has token, attempting to authenticate with response:", response);
+        console.log("🔍 Token found at:", response.data?.token ? 'response.data.token' : 'response.token');
+        console.log("🔍 User data found at:", response.data?.user ? 'response.data.user' : 'response.user or response.data');
+        
+        try {
+          // Auto-login with the received tokens
+          await authCtx.authenticate(response);
+          console.log("✅ Authentication completed successfully");
+          console.log("🔍 Current auth state - isAuthenticated:", authCtx.isAuthenticated);
+          console.log("🔍 Current auth state - token exists:", !!authCtx.token);
+          setIsAuthenticating(false);
+          
+          // Add a small delay to ensure state has updated before showing alert
+          setTimeout(() => {
+            console.log("🔍 Delayed check - isAuthenticated:", authCtx.isAuthenticated);
+            console.log("🔍 Delayed check - token exists:", !!authCtx.token);
+            console.log("🎉 Showing success alert");
+            Alert.alert("Success", "Registration completed successfully! You are now logged in.");
+          }, 100);
+        } catch (authError) {
+          console.error("❌ Authentication failed:", authError);
+          console.error("❌ Authentication error details:", authError.message);
+          setIsAuthenticating(false);
+          Alert.alert("Error", "Registration completed but login failed. Please try logging in manually.");
         }
-      ]);
+      } else {
+        console.log("No authentication data in response, attempting login with credentials");
+        // Fallback: attempt to login with the newly created credentials
+        try {
+          const loginResponse = await login(userEmail, password);
+          console.log("Auto-login response:", loginResponse);
+          await authCtx.authenticate(loginResponse);
+          setIsAuthenticating(false);
+          Alert.alert("Success", "Registration completed and logged in successfully!");
+        } catch (loginError) {
+          console.log("Auto-login failed, redirecting to login screen");
+          setIsAuthenticating(false);
+          Alert.alert(
+            "Registration Complete", 
+            "Registration completed successfully! Please log in with your credentials.",
+            [
+              {
+                text: "OK",
+                onPress: () => {
+                  navigation.replace("Login");
+                }
+              }
+            ]
+          );
+        }
+      }
     } catch (error) {
       console.error("Step 3 failed:", error);
       authCtx.handleError(error);
@@ -204,12 +249,23 @@ function SignupScreen() {
 
   // Resend OTP
   async function handleResendOtp() {
+    if (resendCount >= 3) {
+      Alert.alert("Error", "Maximum resend attempts reached. Please try again later.");
+      return;
+    }
+
+    // Don't set isAuthenticating to avoid showing loading overlay that might interfere
     try {
       await resendOtp(userEmail);
+      setResendCount(prev => prev + 1);
       Alert.alert("Success", "Verification code resent to your email.");
     } catch (error) {
       console.error("Resend OTP failed:", error);
-      authCtx.handleError(error);
+      if (error.response?.status === 429) {
+        Alert.alert("Error", "Please wait before requesting another OTP.");
+      } else {
+        Alert.alert("Error", error.response?.data?.message || "Failed to resend OTP. Please try again.");
+      }
     }
   }
 
@@ -243,6 +299,8 @@ function SignupScreen() {
             onResendOtp={handleResendOtp}
             credentialsInvalid={credentialsInvalid}
             email={userEmail}
+            resendCount={resendCount}
+            maxResends={3}
           />
         );
       case 3:
